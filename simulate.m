@@ -1,34 +1,30 @@
 % time interval in seconds
-tspan = [0 10];
+tspan = [0 3];
 
-% parameter values
-V = subs(V, T_f,    1.5);   % front track [m]
-V = subs(V, T_r,    1.5);   % rear track [m]
-V = subs(V, l_r,    0.5);   % CG to rear axle [m]
-V = subs(V, l_f,    1);     % CG to front axle [m]
-V = subs(V, Z_f,    0.2);   % CG height wrt front axle
-V = subs(V, Z_r,    0.3);   % CG height wrt rear axle
-V = subs(V, h_CG,   0.4);   % CG height wrt ground
-V = subs(V, g,      9.81);  % gravitational acceleration
-V = subs(V, m,      320);   % vehicle sprung mass with driver
-V = subs(V, I(1,1), 30);    % moment of inertia about vehicle x axis
-V = subs(V, I(2,2), 60);    % moment of inertia about vehicle y axis
-V = subs(V, I(3,3), 100);   % moment of inertia about vehicle z axis
-I_xz = 0;                   % product of inertia between xz vehicle axes
-V = subs(V, I(3,1), I_xz);
-V = subs(V, I(1,3), I_xz);
+% parameter values, all units are metric
+g    = 9.81;   % gravitational acceleration
+T_f  = 1.5 ;   % front track 
+T_r  = 1.5 ;   % rear track 
+l_r  = 0.5 ;   % CG to rear axle 
+l_f  = 1   ;   % CG to front axle 
+Z_f  = 0.2 ;   % CG height wrt front axle
+Z_r  = 0.3 ;   % CG height wrt rear axle
+h_CG = 0.4 ;   % CG height wrt ground
+m    = 320 ;   % vehicle sprung mass with driver
+Ixx  = 30  ;   % moment of inertia about vehicle x axis
+Iyy  = 60  ;   % moment of inertia about vehicle y axis
+Izz =  100 ;   % moment of inertia about vehicle z axis
+Ixz =  0   ;   % product of inertia between xz vehicle axes
+k_f = 50000;   % front spring stiffness
+k_r = 80000;   % rear spring stiffness
+b_f = 2000 ;   % front damping rate
+b_r = 2000 ;   % rear damping rate
 
-V = subs(V, k_f,    50000); % front spring stiffness
-V = subs(V, k_r,    80000); % rear spring stiffness
-V = subs(V, b_f,    2000);  % front damping rate
-V = subs(V, b_r,    2000);  % rear damping rate
-
-V = subs(V, mu,    100);      % lateral dynamic friction coefficient
-
+V = subs(V);
 
 % initial values
-y_0     = 0;
-Dy_0    = -1;
+y_0     = 0; 
+Dy_0    = 1;
 r_0     = 0;
 Dr_0    = 0;
 p_0     = 0; % to match with rest position 
