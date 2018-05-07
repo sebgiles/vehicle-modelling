@@ -23,10 +23,10 @@ Z_rl = - k_r * d_rl;
 syms mu
 
 % planar forces at contact points wrt undercarriage frame
-f_ufr = [0;0;0];
+f_ufr = [0;800;0];
 f_ufl = [0;0;0];
-f_urr = [800;0;0];
-f_url = [800;0;0];
+f_urr = [0;0;0];
+f_url = [0;0;0];
 
 % planar forces at contact points wrt inertial frame
 f_fr = Rz*f_ufr;
@@ -42,8 +42,8 @@ F_rl = R\f_rl;
 
 % generalized external forces
 for i = 1:n_DOF
-    Q(i) =        F_fr.' * fdiff(W_fr, getel(q,i,t),t);
-    Q(i) = Q(i) + F_fl.' * fdiff(W_fl, getel(q,i,t),t);
-    Q(i) = Q(i) + F_rr.' * fdiff(W_rr, getel(q,i,t),t);
-    Q(i) = Q(i) + F_rl.' * fdiff(W_rl, getel(q,i,t),t);
+    Q(i) =        f_fr.' * fdiff(w_fr, getel(q,i,t),t);
+    Q(i) = Q(i) + f_fl.' * fdiff(w_fl, getel(q,i,t),t);
+    Q(i) = Q(i) + f_rr.' * fdiff(w_rr, getel(q,i,t),t);
+    Q(i) = Q(i) + f_rl.' * fdiff(w_rl, getel(q,i,t),t);
 end
