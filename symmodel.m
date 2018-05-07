@@ -60,7 +60,7 @@ Rx = [      1        0       0
 % it can be used to rotate reference frame from body to inertial
 R = Rz*Ry*Rx ; 
     
-% Suspension attachment point coordinates wrt road (rotate and translate)
+% Suspension attachment point coordinates wrt inertial (rotate and translate)
 p_fr = p_CG + R*P_fr ;
 p_fl = p_CG + R*P_fl ;
 p_rl = p_CG + R*P_rl ;
@@ -91,15 +91,12 @@ d_rl(t) = d_rl;
 syms g
 % vehicle mass
 syms m  
-% vehicle inertia tensor wrt body frame
-I = sym('I', [3 3]);
 
-% y axis is principle rotation axis (assuming left/right simmetry)
-I(1,2)=0;
-I(3,2)=0;
-% and because the inertia tensor must always be simmetric
-I(2,1)=0;
-I(2,3)=0;
+% vehicle inertia tensor wrt body frame
+syms Ixx Iyy Izz Ixz
+I = [Ixx 0   Ixz;
+     0   Iyy 0  ;
+     Ixz 0   Izz ];
 
 % spring coefficients 
 syms k_f k_r
@@ -158,14 +155,19 @@ p_rr = p_rr(t);
 p_rl = p_rl(t);
 
 w_fr = [ p_fr(1:2); 0];
-w_fl = [ p_fr(1:2); 0];
-w_rr = [ p_fr(1:2); 0];
-w_rl = [ p_fr(1:2); 0];
+w_fl = [ p_fl(1:2); 0];
+w_rr = [ p_rr(1:2); 0];
+w_rl = [ p_rl(1:2); 0];
 
 p_fr(t) = p_fr;
 p_fl(t) = p_fl;
 p_rr(t) = p_rr;
 p_rl(t) = p_rl;
+
+w_fr(t) = w_fr;
+w_fl(t) = w_fl;
+w_rr(t) = w_rr;
+w_rl(t) = w_rl;
 
 % wheel contact points wrt body frame
 W_fr = R\w_fr - p_CG;
@@ -185,6 +187,7 @@ Dw_lfl = (Rz\Dw_fl).'*[0;1;0];
 Dw_lrr = (Rz\Dw_rr).'*[0;1;0];
 Dw_lrl = (Rz\Dw_rl).'*[0;1;0];
 
+%{
 % wheel vertical forces for friction calculation
 Z_fr = - k_f * d_fr;
 Z_fl = - k_f * d_fl;
@@ -199,6 +202,20 @@ f_fr = -mu*Z_fr*sign(Dw_lfr)*[sin(y);-cos(y);0];
 f_fl = -mu*Z_fl*sign(Dw_lfl)*[sin(y);-cos(y);0];
 f_rr = -mu*Z_rr*sign(Dw_lrr)*[sin(y);-cos(y);0];
 f_rl = -mu*Z_rl*sign(Dw_lrl)*[sin(y);-cos(y);0];
+
+%}
+
+% planar forces at contact points wrt undercarriage frame
+f_fr = [0;0;0];
+f_fl = [0;0;0];
+f_rr = [800;0;0];
+f_rl = [800;0;0];
+
+% planar forces at contact points wrt inertial frame
+f_fr = [sin(y);-cos(y);0];
+f_fl = [sin(y);-cos(y);0];
+f_rr = [sin(y);-cos(y);0];
+f_rl = [sin(y);-cos(y);0];
 
 % planar forces at contact points wrt body frame
 F_fr = R\f_fr;
@@ -221,7 +238,7 @@ L_int = lagint(t, q, L, D);
 
 % Lagrange Equations: dt(ddq_k(L)) - dq_k(L) + ddq_k(D) = Q_k
 
-E = L_int == Q;
+E = L_int == 0;
 
 
 % make substitutions to transform into first order equations
