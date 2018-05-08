@@ -1,6 +1,12 @@
 % dynamic friction coefficient
 syms mu
 
+% wheel rotation equivalent speed (input to dynamic system)
+v_wfr = 10;
+v_wfl = 10;
+v_wrr = 10;
+v_wrl = 10;
+
 % wheel vertical forces for friction calculation
 Z_fr = - k_f * d_fr;
 Z_fl = - k_f * d_fl;
@@ -25,8 +31,24 @@ v_lfl = getel(v_ufl,2,t);
 v_lrr = getel(v_urr,2,t);
 v_lrl = getel(v_url,2,t);
 
-% % planar forces at contact points wrt undercarriage frame
-% f_ufr = [0;Z_fr*;0];
-% f_ufl = [0;Z_fl*;0];
-% f_urr = [0;Z_rr*;0];
-% f_url = [0;Z_rl*;0];
+% slip angle
+%a = 
+
+%s_lfr = 
+
+mu_fr = 1;
+mu_fl = 1; 
+mu_rr = 1;
+mu_rl = 1;
+
+% planar forces at contact points wrt undercarriage frame
+f_ufr = [0; - mu_fr*Z_fr;0];
+f_ufl = [0; - mu_fl*Z_fl;0];
+f_urr = [0; - mu_rr*Z_rr;0];
+f_url = [0; - mu_rl*Z_rl;0];
+
+% planar forces at contact points wrt undercarriage frame
+f_ufr = [0; 800; 0];
+f_ufl = [0; 800; 0];
+f_urr = [0; 800; 0];
+f_url = [0; 800; 0];
