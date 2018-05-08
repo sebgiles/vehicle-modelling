@@ -1,32 +1,10 @@
-tspan = [0 10];
-
-% initial values for lagrangian variables
-y_0     =       0; % yaw
-Dy_0    =       0.5; % yaw rate
-r_0     =       pi/12; % roll
-Dr_0    =       0; % roll rate
-p_0     =       0; % pitch
-Dp_0    =       0; % pitch rate
-z_CG_0  =  -0.388; % vertical position
-Dz_CG_0 =       0; % vertical speed
-x_CG_0  =       0; % x position
-Dx_CG_0 =       10; % x speed
-y_CG_0  =       0; % y position
-Dy_CG_0 =       0; % y speed
-
-% group initial values, same order as in the S array
-s_0 = zeros(length(S),1);
-for i = 1:length(S)
-    s_0(i) = eval([ char(S(i)) '_0;']);
-end
-
-Vp = parametrize(V);
+[Vp, s0, tspan] = parametrize(V,S);
 
 % convert vectorspace model to matlab function for use by ode45
 M = matlabFunction(Vp,'Vars',{'t','Y'});
 
 % where the magic happens
-sol = ode45(M,tspan,s_0);
+sol = ode45(M,tspan,s0);
 clear tspan
 
 names = cell(1,length(S)+1);
