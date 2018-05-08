@@ -1,5 +1,4 @@
-% time interval in seconds
-tspan = [0 10];
+function Vp = parametrize(V)
 
 % parameter values, all units are metric
 g    = 9.81;   % gravitational acceleration
@@ -20,18 +19,5 @@ k_r = 80000;   % rear spring stiffness
 b_f = 2000 ;   % front damping rate
 b_r = 2000 ;   % rear damping rate
 
-% initial values for lagrangian variables
-y_0     =       0; % yaw
-Dy_0    =       0; % yaw rate
-r_0     =       0; % roll
-Dr_0    =       0; % roll rate
-p_0     =       0; % pitch
-Dp_0    =       0; % pitch rate
-z_CG_0  =  -0.388; % vertical position
-Dz_CG_0 =       0; % vertical speed
-x_CG_0  =       0; % x position
-Dx_CG_0 =       0; % x speed
-y_CG_0  =       0; % y position
-Dy_CG_0 =       0; % y speed
-
-V = subs(V);
+Vp = subs(V);
+end
