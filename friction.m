@@ -19,20 +19,28 @@ DW_fl = diff(W_fl, t);
 DW_rr = diff(W_rr, t);
 DW_rl = diff(W_rl, t);
 
-% wheel contact point velocities speed wrt undercarriage frame
+% ground velocities wrt undercarriage frame
 v_ufr = Rz\DW_fr;
 v_ufl = Rz\DW_fl;
 v_urr = Rz\DW_rr;
 v_url = Rz\DW_rl;
 
 % wheel contact point lateral speeds
-v_lfr = getel(v_ufr,2,t);
-v_lfl = getel(v_ufl,2,t);
-v_lrr = getel(v_urr,2,t);
-v_lrl = getel(v_url,2,t);
+v_uyfr = getel(v_ufr,2,t);
+v_uyfl = getel(v_ufl,2,t);
+v_uyrr = getel(v_urr,2,t);
+v_uyrl = getel(v_url,2,t);
+% wheel contact point longitudinal speeds
+v_uxfr = getel(v_ufr,1,t);
+v_uxfl = getel(v_ufl,1,t);
+v_uxrr = getel(v_urr,1,t);
+v_uxrl = getel(v_url,1,t);
 
-% slip angle
-%a = 
+% slip angle (angle between wheel velocities and undercarriage x axis)
+a_fr = atan(v_uyfr/v_uxfr);
+a_fr = atan(v_uyfl/v_uxfl);
+a_fr = atan(v_uyrr/v_uxrr);
+a_fr = atan(v_uyrl/v_uxrl);
 
 %s_lfr = 
 
@@ -46,9 +54,3 @@ f_ufr = [0; - mu_fr*Z_fr;0];
 f_ufl = [0; - mu_fl*Z_fl;0];
 f_urr = [0; - mu_rr*Z_rr;0];
 f_url = [0; - mu_rl*Z_rl;0];
-
-% planar forces at contact points wrt undercarriage frame
-f_ufr = [0; 800; 0];
-f_ufl = [0; 800; 0];
-f_urr = [0; 800; 0];
-f_url = [0; 800; 0];

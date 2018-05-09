@@ -14,4 +14,5 @@ for i = 1:length(S)
 end
 
 sim = array2table([sol.x.' sol.y.'],'VariableNames',names);
-tile(sim.t, [sim.y/pi*180, sim.p/pi*180, sim.r/pi*180, sim.x_CG, sim.y_CG, sim.z_CG])
+tile(sim.t, [sim.y/pi*180, sim.p/pi*180, sim.r/pi*180, ... 
+                 sim.x_CG,     sim.y_CG,     sim.z_CG])

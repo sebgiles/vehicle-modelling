@@ -1,10 +1,9 @@
 tic
-
 %kinematics
 %toc
 %dynamics
 %toc
-%forces
+forces
 toc
 simulate
 toc

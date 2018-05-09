@@ -4,7 +4,7 @@ tspan = [0 20];
 
 % initial values for lagrangian variables
 y_0     =       0; % yaw
-Dy_0    =     0.5; % yaw rate
+Dy_0    =       0; % yaw rate
 r_0     =       0; % roll
 Dr_0    =       0; % roll rate
 p_0     =       0; % pitch
@@ -12,18 +12,18 @@ Dp_0    =       0; % pitch rate
 z_CG_0  =  -0.388; % z position
 Dz_CG_0 =       0; % z speed
 x_CG_0  =       0; % x position
-Dx_CG_0 =      10; % x speed
+Dx_CG_0 =       0; % x speed
 y_CG_0  =       0; % y position
 Dy_CG_0 =       0; % y speed
-mu      =       2; % lateral friction coefficient
+mu      =       0; % lateral friction coefficient
 
 % parameter values, all units are metric
 g    = 9.81;   % gravitational acceleration
 T_f  = 1.5 ;   % front track 
 T_r  = 1.5 ;   % rear track 
-l_r  = 0.75;   % CG to rear axle 
-l_f  = 0.75;   % CG to front axle 
-Z_f  = 0.2 ;   % CG height wrt front axle
+l_r  =  0.5;   % CG to rear axle 
+l_f  =    1;   % CG to front axle 
+Z_f  = 0.3 ;   % CG height wrt front axle
 Z_r  = 0.3 ;   % CG height wrt rear axle
 h_CG = 0.4 ;   % CG height wrt ground
 m    = 320 ;   % vehicle sprung mass with driver
