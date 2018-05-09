@@ -44,13 +44,18 @@ a_fr = atan(v_uyrl/v_uxrl);
 
 %s_lfr = 
 
-mu_fr = 1;
-mu_fl = 1; 
-mu_rr = 1;
-mu_rl = 1;
+mu_Sfr = 0;
+mu_Sfl = 0;
+mu_Srr = 0;
+mu_Srl = 0;
+
+
+mu_Lfr = mu_Rfr*s_Lfr
+
+
 
 % planar forces at contact points wrt undercarriage frame
-f_ufr = [0; - mu_fr*Z_fr;0];
-f_ufl = [0; - mu_fl*Z_fl;0];
-f_urr = [0; - mu_rr*Z_rr;0];
-f_url = [0; - mu_rl*Z_rl;0];
+f_ufr = [mu_Lfr*Z_fr; mu_Sfr*Z_fr;0];
+f_ufl = [mu_Lfl*Z_fl; mu_Sfl*Z_fl;0];
+f_urr = [mu_Lrr*Z_rr; mu_Srr*Z_rr;0];
+f_url = [mu_Lrl*Z_rl; mu_Srl*Z_rl;0];

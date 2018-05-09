@@ -3,7 +3,7 @@ function [Vp, s0, tspan] = parametrize(V,S)
 tspan = [0 20];
 
 % initial values for lagrangian variables
-y_0     =       0; % yaw
+y_0     =     0.5; % yaw
 Dy_0    =       0; % yaw rate
 r_0     =       0; % roll
 Dr_0    =       0; % roll rate
