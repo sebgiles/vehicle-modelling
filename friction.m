@@ -1,11 +1,18 @@
 % dynamic friction coefficient
 syms mu
 
-% wheel rotation equivalent speed (input to dynamic system)
+% wheel rotation equivalent speed input
 v_wfr = 10;
 v_wfl = 10;
 v_wrr = 10;
 v_wrl = 10;
+
+% steer angle (no ackermann geometry for now)
+a_s = 0;
+% passive rotation matrix from undercarriage frame to front wheel frame
+R_steer = [ cos(a_s) -sin(a_s)  0
+            sin(a_s)  cos(a_s)  0
+            0         0         1 ];
 
 % wheel vertical forces for friction calculation
 Z_fr = - k_f * d_fr;
@@ -19,9 +26,9 @@ DW_fl = diff(W_fl, t);
 DW_rr = diff(W_rr, t);
 DW_rl = diff(W_rl, t);
 
-% ground velocities wrt undercarriage frame
-v_ufr = Rz\DW_fr;
-v_ufl = Rz\DW_fl;
+% ground velocities wrt corresponding wheel frames
+v_ufr = R_steer\Rz\DW_fr;
+v_ufl = R_steer\Rz\DW_fl;
 v_urr = Rz\DW_rr;
 v_url = Rz\DW_rl;
 
@@ -38,9 +45,9 @@ v_uxrl = getel(v_url,1,t);
 
 % slip angle (angle between wheel velocities and undercarriage x axis)
 a_fr = atan(v_uyfr/v_uxfr);
-a_fr = atan(v_uyfl/v_uxfl);
-a_fr = atan(v_uyrr/v_uxrr);
-a_fr = atan(v_uyrl/v_uxrl);
+a_fl = atan(v_uyfl/v_uxfl);
+a_rr = atan(v_uyrr/v_uxrr);
+a_rl = atan(v_uyrl/v_uxrl);
 
 %s_lfr = 
 
@@ -49,13 +56,16 @@ mu_Sfl = 0;
 mu_Srr = 0;
 mu_Srl = 0;
 
+mu_Lfr = 0; %mu_Rfr*s_Lfr
+mu_Lfl = 0;
+mu_Lrr = 0;
+mu_Lrl = 0;
 
-mu_Lfr = mu_Rfr*s_Lfr
 
 
 
 % planar forces at contact points wrt undercarriage frame
-f_ufr = [mu_Lfr*Z_fr; mu_Sfr*Z_fr;0];
-f_ufl = [mu_Lfl*Z_fl; mu_Sfl*Z_fl;0];
-f_urr = [mu_Lrr*Z_rr; mu_Srr*Z_rr;0];
-f_url = [mu_Lrl*Z_rl; mu_Srl*Z_rl;0];
+f_ufr = R_steer*[mu_Lfr*Z_fr; mu_Sfr*Z_fr;0];
+f_ufl = R_steer*[mu_Lfl*Z_fl; mu_Sfl*Z_fl;0];
+f_urr =         [mu_Lrr*Z_rr; mu_Srr*Z_rr;0];
+f_url =         [mu_Lrl*Z_rl; mu_Srl*Z_rl;0];

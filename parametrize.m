@@ -1,9 +1,9 @@
 function [Vp, s0, tspan] = parametrize(V,S)
 
-tspan = [0 20];
+tspan = [0 10];
 
 % initial values for lagrangian variables
-y_0     =     0.5; % yaw
+y_0     =       0; % yaw
 Dy_0    =       0; % yaw rate
 r_0     =       0; % roll
 Dr_0    =       0; % roll rate
@@ -15,7 +15,6 @@ x_CG_0  =       0; % x position
 Dx_CG_0 =       0; % x speed
 y_CG_0  =       0; % y position
 Dy_CG_0 =       0; % y speed
-mu      =       0; % lateral friction coefficient
 
 % parameter values, all units are metric
 g    = 9.81;   % gravitational acceleration
