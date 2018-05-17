@@ -15,10 +15,10 @@ R_steer = [ cos(a_s) -sin(a_s)  0
             0         0         1 ];
 
 % wheel vertical forces for friction calculation
-Z_fr = - k_f * d_fr;
-Z_fl = - k_f * d_fl;
-Z_rr = - k_r * d_rr;
-Z_rl = - k_r * d_rl;
+Z_fr = - k_f * d_fr + b_f * diff(d_fr,t);
+Z_fl = - k_f * d_fl + b_f * diff(d_fl,t);
+Z_rr = - k_r * d_rr + b_r * diff(d_rr,t);
+Z_rl = - k_r * d_rl + b_r * diff(d_rl,t);
 
 % wheel contact point velocities wrt inertial frame
 DW_fr = diff(W_fr, t);
