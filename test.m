@@ -1,6 +1,9 @@
+clear
 tic
+parametrize
+toc
 kinematics
-toc 
+toc
 dynamics
 toc
 friction

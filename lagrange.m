@@ -1,24 +1,23 @@
 % compute left hand side of lagrange equations
-function E_LHS = lagrange(t, q, L, D)
+function E_LHS = lagrange(t, q, Dq, DDq, L, D)
 
-if nargin < 4
+  if isa(q,'symfun')
+    q = q(t);
+  end
+
+  if isa(Dq,'symfun')
+    Dq = Dq(t);
+  end
+
+  if nargin < 6
     D = sym(0);
-end
+  end
 
-n = length(q(t));
+  ddLdtdq = diff(functionalDerivative(L, Dq),t);
+  ddLdtdq = subs( ddLdtdq, [diff(q); diff(Dq)], [Dq; DDq]);
 
-dq = sym('dq',[n,1]);
+  E_LHS = ddLdtdq               ...
+  - functionalDerivative(L, q)  ...
+  + functionalDerivative(D, Dq);
 
-for i = 1:n
-    dq(i) = symfun(['dq' num2str(i) '(t)'],t);
-end
-
-L = subs(L,diff(q,t), dq);
-D = subs(D,diff(q,t), dq);
-
-E_LHS = diff(functionalDerivative(L, dq),t) ...
-        - functionalDerivative(L, q)        ...
-        + functionalDerivative(D, dq);
-    
-E_LHS = subs(E_LHS, dq, diff(q,t));
 end

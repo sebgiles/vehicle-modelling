@@ -1,23 +1,25 @@
 usesym = 0;
+linear = 1;
+
 
 if usesym
-    
+
     %-------- KINEMATICS PARAMETERS --------------------------------
-    
+
     % track widths
     syms T_f T_r
-    
+
     % axle positions wrt body frame
     % "0=CG, (x,y,z) -> (forward,right,down)"
     syms l_f l_r
     syms Z_f Z_r
-    
+
     % CG no load height (negative)
     syms h_CG
-    
+
     % spring coefficients
     syms k_f k_r
-    
+
     % damper coefficients
     syms b_f b_r
     % ----- DYNAMIC PARAMETERS ------------------------------------------------
@@ -27,9 +29,9 @@ if usesym
     syms m
     % vehicle inertia tensor wrt body frame
     syms Ixx Iyy Izz Ixz
-    
+
 else
-    
+
     % parameter values, all units are metric
     g    = 9.81;   % gravitational acceleration
     T_f  = 1.5 ;   % front track
@@ -48,5 +50,5 @@ else
     k_r = 80000;   % rear spring stiffness
     b_f = 2000 ;   % front damping rate
     b_r = 2000 ;   % rear damping rate
-    
+
 end
