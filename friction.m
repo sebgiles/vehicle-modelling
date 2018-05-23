@@ -24,11 +24,11 @@ Dw_rr = diff(w_rr, t);
 Dw_rl = diff(w_rl, t);
 
 % ground velocities wrt corresponding wheel frames
-v_ufr = R_steer\Rz\Dw_fr;
-v_ufl = R_steer\Rz\Dw_fl;
-v_urr = Rz\Dw_rr;
-v_url = Rz\Dw_rl;
-
+v_ufr = R_steer\Dw_fr;
+v_ufl = R_steer\Dw_fl;
+v_urr = Dw_rr;
+v_url = Dw_rl;
+toc
 % wheel contact point lateral speeds
 v_uyfr = getel(v_ufr,2,t);
 v_uyfl = getel(v_ufl,2,t);
@@ -39,7 +39,7 @@ v_uxfr = getel(v_ufr,1,t);
 v_uxfl = getel(v_ufl,1,t);
 v_uxrr = getel(v_urr,1,t);
 v_uxrl = getel(v_url,1,t);
-
+toc
 RE_fr = v_uxfr/N_fr;
 RE_fl = v_uxfl/N_fl;
 RE_rr = v_uxrr/N_rr;
@@ -60,13 +60,13 @@ SA_fr = atan(-v_uyfr/v_uxfr);
 SA_fl = atan(-v_uyfl/v_uxfl);
 SA_rr = atan(-v_uyrr/v_uxrr);
 SA_rl = atan(-v_uyrl/v_uxrl);
-
+toc
 tyreID = 'Hoosier FSAE 20.5x7.0-13 43129 @ 12 psi, 7 inch rim';
 [FX_fr, FY_fr, ~, ~] = PAC96(SL_fr, SA_fr, 0, FZ_fr,tyreID);
 [FX_fl, FY_fl, ~, ~] = PAC96(SL_fl, SA_fl, 0, FZ_fl,tyreID);
 [FX_rr, FY_rr, ~, ~] = PAC96(SL_rr, SA_rr, 0, FZ_rr,tyreID);
 [FX_rl, FY_rl, ~, ~] = PAC96(SL_rl, SA_rl, 0, FZ_rl,tyreID);
-
+toc
 % planar forces at contact points wrt undercarriage frame
 %f_ufr = R_steer*[FX_fr; FY_fr; 0];
 %f_ufl = R_steer*[FX_fl; FY_fl; 0];

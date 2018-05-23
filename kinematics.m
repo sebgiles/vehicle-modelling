@@ -31,9 +31,9 @@ syms y(t) p(t) r(t)
 syms x_CG(t) y_CG(t) z_CG(t)   
   
 
-q    = [   y;    p;    r; x_CG; y_CG; z_CG];
+q    = [   y;             x_CG; y_CG; z_CG];
 p_CG = [x_CG; y_CG; z_CG];
-
+p;
 % --------------------------------------------------------------
 
 % successive rotation matrices from Inertial frame to body frame
@@ -41,13 +41,16 @@ Rz = [ cos(y)  -sin(y)        0
        sin(y)   cos(y)        0
             0        0        1 ];
      
-Ry = [ cos(p)        0   sin(p)
-            0        1        0
-      -sin(p)        0   cos(p) ];
-    
-Rx = [      1        0       0
-            0   cos(r)  -sin(r)
-            0   sin(r)   cos(r) ];
+% Ry = [ cos(0)        0   sin(p)
+%             0        1        0
+%       -sin(p)        0   cos(p) ];
+%     
+% Rx = [      1        0       0
+%             0   cos(r)  -sin(r)
+%             0   sin(r)   cos(r) ];
+
+Ry = eye(3);
+Rx = eye(3);
 
 % this matrix carries all information about vehicle attitude, 
 % it can be used to rotate vectors in body to inertial frame
