@@ -1,14 +1,4 @@
-%-------- KINEMATICS PARAMETERS --------------------------------
-% track widths
-syms T_f T_r    
 
-% axle positions wrt body frame 
-% "0=CG, (x,y,z) -> (forward,right,down)"
-syms l_f l_r                       
-syms Z_f Z_r    
-
-% CG no load height (negative)
-syms h_CG       
 
 % suspension position at no load
 h_f = Z_f - h_CG ;
@@ -31,7 +21,7 @@ syms y(t) p(t) r(t)
 syms x_CG(t) y_CG(t) z_CG(t)   
   
 
-q    = [   y;             x_CG; y_CG; z_CG];
+q    = [   y;    y,    p, x_CG; y_CG; z_CG];
 p_CG = [x_CG; y_CG; z_CG];
 p;
 % --------------------------------------------------------------
@@ -41,16 +31,13 @@ Rz = [ cos(y)  -sin(y)        0
        sin(y)   cos(y)        0
             0        0        1 ];
      
-% Ry = [ cos(0)        0   sin(p)
-%             0        1        0
-%       -sin(p)        0   cos(p) ];
-%     
-% Rx = [      1        0       0
-%             0   cos(r)  -sin(r)
-%             0   sin(r)   cos(r) ];
-
-Ry = eye(3);
-Rx = eye(3);
+Ry = [ cos(0)        0   sin(p)
+            0        1        0
+      -sin(p)        0   cos(p) ];
+    
+Rx = [      1        0       0
+            0   cos(r)  -sin(r)
+            0   sin(r)   cos(r) ];
 
 % this matrix carries all information about vehicle attitude, 
 % it can be used to rotate vectors in body to inertial frame
