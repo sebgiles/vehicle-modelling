@@ -1,5 +1,3 @@
-
-
 % suspension position at no load
 h_f = Z_f - h_CG ;
 h_r = Z_r - h_CG ;
@@ -9,7 +7,6 @@ P_fr = [ l_f  T_f/2 Z_f].';
 P_fl = [ l_f -T_f/2 Z_f].';
 P_rr = [-l_r  T_r/2 Z_r].';
 P_rl = [-l_r -T_r/2 Z_r].';
-%---------------------------------------------------------------
 
 % time
 syms t
@@ -20,10 +17,8 @@ syms y(t) p(t) r(t)
 % CG position wrt inertial frame
 syms x_CG(t) y_CG(t) z_CG(t)   
   
-
 q    = [   y;    y,    p, x_CG; y_CG; z_CG];
 p_CG = [x_CG; y_CG; z_CG];
-p;
 % --------------------------------------------------------------
 
 % successive rotation matrices from Inertial frame to body frame
@@ -50,20 +45,19 @@ p_rl = p_CG + R*P_rl ;
 p_rr = p_CG + R*P_rr ;
 
 % suspension travel 
-d_fr = -[0 0 1]*p_fr+h_f;
-d_fl = -[0 0 1]*p_fl+h_f;
-d_rr = -[0 0 1]*p_rr+h_r;
-d_rl = -[0 0 1]*p_rl+h_r;
+d_fr = -[0 0 1]*p_fr + h_f;
+d_fl = -[0 0 1]*p_fl + h_f;
+d_rr = -[0 0 1]*p_rr + h_r;
+d_rl = -[0 0 1]*p_rl + h_r;
 
 % wheel contact points wrt inertial frame 
-w_fr = p_fr.*[1;1;0];
-w_fl = p_fl.*[1;1;0];
-w_rr = p_rr.*[1;1;0];
-w_rl = p_rl.*[1;1;0];
+w_fr = [1 1 0]*p_fr;
+w_fl = [1 1 0]*p_fl;
+w_rr = [1 1 0]*p_rr;
+w_rl = [1 1 0]*p_rl;
 
 % velocity of CG wrt inertial frame
 v_CG = diff(p_CG,t);
-
 
 % Rotational velocity vector wrt inertial frame
 E = [ 0  -sin(y)  cos(p)*cos(y)
