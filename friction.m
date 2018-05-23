@@ -1,11 +1,8 @@
-% dynamic friction coefficient
-syms mu
-
-% wheel rotation equivalent speed input
-v_wfr = 10;
-v_wfl = 10;
-v_wrr = 10;
-v_wrl = 10;
+% wheel angular velocities
+N_fr = 38.5;
+N_fl = 38.5;
+N_rr = 38.5;
+N_rl = 38.5;
 
 % steer angle (no ackermann geometry for now)
 a_s = 0;
@@ -15,22 +12,22 @@ R_steer = [ cos(a_s) -sin(a_s)  0
             0         0         1 ];
 
 % wheel vertical forces for friction calculation
-Z_fr = - k_f * d_fr + b_f * diff(d_fr,t);
-Z_fl = - k_f * d_fl + b_f * diff(d_fl,t);
-Z_rr = - k_r * d_rr + b_r * diff(d_rr,t);
-Z_rl = - k_r * d_rl + b_r * diff(d_rl,t);
+FZ_fr = - k_f * d_fr + b_f * diff(d_fr,t);
+FZ_fl = - k_f * d_fl + b_f * diff(d_fl,t);
+FZ_rr = - k_r * d_rr + b_r * diff(d_rr,t);
+FZ_rl = - k_r * d_rl + b_r * diff(d_rl,t);
 
 % wheel contact point velocities wrt inertial frame
-DW_fr = diff(W_fr, t);
-DW_fl = diff(W_fl, t);
-DW_rr = diff(W_rr, t);
-DW_rl = diff(W_rl, t);
+Dw_fr = diff(w_fr, t);
+Dw_fl = diff(w_fl, t);
+Dw_rr = diff(w_rr, t);
+Dw_rl = diff(w_rl, t);
 
 % ground velocities wrt corresponding wheel frames
-v_ufr = R_steer\Rz\DW_fr;
-v_ufl = R_steer\Rz\DW_fl;
-v_urr = Rz\DW_rr;
-v_url = Rz\DW_rl;
+v_ufr = R_steer\Rz\Dw_fr;
+v_ufl = R_steer\Rz\Dw_fl;
+v_urr = Rz\Dw_rr;
+v_url = Rz\Dw_rl;
 
 % wheel contact point lateral speeds
 v_uyfr = getel(v_ufr,2,t);
@@ -43,29 +40,39 @@ v_uxfl = getel(v_ufl,1,t);
 v_uxrr = getel(v_urr,1,t);
 v_uxrl = getel(v_url,1,t);
 
+RE_fr = v_uxfr/N_fr;
+RE_fl = v_uxfl/N_fl;
+RE_rr = v_uxrr/N_rr;
+RE_rl = v_uxrl/N_rl;
+
+R0_fr = 0.26;
+R0_fl = 0.26;
+R0_rr = 0.26;
+R0_rl = 0.26;
+
+SL_fr = R0_fr/RE_fr-1;
+SL_fl = R0_fl/RE_fl-1;
+SL_rr = R0_rr/RE_rr-1;
+SL_rl = R0_rl/RE_rl-1;
+
 % slip angle (angle between wheel velocities and undercarriage x axis)
-a_fr = atan(v_uyfr/v_uxfr);
-a_fl = atan(v_uyfl/v_uxfl);
-a_rr = atan(v_uyrr/v_uxrr);
-a_rl = atan(v_uyrl/v_uxrl);
+SA_fr = atan(-v_uyfr/v_uxfr);
+SA_fl = atan(-v_uyfl/v_uxfl);
+SA_rr = atan(-v_uyrr/v_uxrr);
+SA_rl = atan(-v_uyrl/v_uxrl);
 
-%s_lfr = 
-
-mu_Sfr = 0;
-mu_Sfl = 0;
-mu_Srr = 0;
-mu_Srl = 0;
-
-mu_Lfr = 0; %mu_Rfr*s_Lfr
-mu_Lfl = 0;
-mu_Lrr = 0;
-mu_Lrl = 0;
-
-
-
+tyreID = 'Hoosier FSAE 20.5x7.0-13 43129 @ 12 psi, 7 inch rim';
+[FX_fr, FY_fr, ~, ~] = PAC96(SL_fr, SA_fr, 0, FZ_fr,tyreID);
+[FX_fl, FY_fl, ~, ~] = PAC96(SL_fl, SA_fl, 0, FZ_fl,tyreID);
+[FX_rr, FY_rr, ~, ~] = PAC96(SL_rr, SA_rr, 0, FZ_rr,tyreID);
+[FX_rl, FY_rl, ~, ~] = PAC96(SL_rl, SA_rl, 0, FZ_rl,tyreID);
 
 % planar forces at contact points wrt undercarriage frame
-f_ufr = R_steer*[mu_Lfr*Z_fr; mu_Sfr*Z_fr;0];
-f_ufl = R_steer*[mu_Lfl*Z_fl; mu_Sfl*Z_fl;0];
-f_urr =         [mu_Lrr*Z_rr; mu_Srr*Z_rr;0];
-f_url =         [mu_Lrl*Z_rl; mu_Srl*Z_rl;0];
+%f_ufr = R_steer*[FX_fr; FY_fr; 0];
+%f_ufl = R_steer*[FX_fl; FY_fl; 0];
+%f_urr =         [FX_rr; FY_rr; 0];
+%f_url =         [FX_rl; FY_rl; 0];
+f_ufr = R_steer*[FX_fr; 0; 0];
+f_ufl = R_steer*[FX_fl; 0; 0];
+f_urr =         [FX_rr; 0; 0];
+f_url =         [FX_rl; 0; 0];

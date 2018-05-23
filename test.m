@@ -1,11 +1,12 @@
 tic
-kinematics
-toc
-dynamics
-toc
-Q = zeros(6,1);
+%kinematics
+%toc
+%dynamics
+%toc
+forces
+%Q = zeros(6,1);
 toc
 equate
-toc 
+toc
 simulate
 toc
