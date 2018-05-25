@@ -1,3 +1,7 @@
+
+            % sfondi grafici in bianco simulink
+             %oltre al grafico manda toworkspace
+
 % substitute parameters and set initial values and simulation time
 tspan = [0 10];
 
@@ -40,5 +44,3 @@ tile(sim.t, [sim.y/pi*180, sim.p/pi*180, sim.r/pi*180, ...
                  sim.x_CG,     sim.y_CG,     sim.z_CG])
              
              
-             sfondi grafici in bianco simulink
-             oltre al grafico manda toworkspace
