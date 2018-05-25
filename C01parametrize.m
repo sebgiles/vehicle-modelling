@@ -1,4 +1,4 @@
-usesym = 1;
+usesym = 0;
 linear = 1;
 
 
@@ -36,7 +36,7 @@ else
     g    = 9.81;   % gravitational acceleration
     T_f  = 1.5 ;   % front track
     T_r  = 1.5 ;   % rear track
-    l_r  =  0.5;   % CG to rear axle
+    l_r  = 0.5;   % CG to rear axle
     l_f  =    1;   % CG to front axle
     Z_f  = 0.3 ;   % CG height wrt front axle
     Z_r  = 0.3 ;   % CG height wrt rear axle

@@ -1,5 +1,6 @@
-
-syms FX_fr FY_fr FX_fl FY_fl FX_rr FY_rr FX_rl FY_rl
+friction
+%syms FX_fr FY_fr FX_fl FY_fl FX_rr FY_rr FX_rl FY_rl
+F = [FX_fr; FY_fr; FX_fl; FY_fl; FX_rr; FY_rr; FX_rl; FY_rl];
 
 % planar forces at contact points wrt undercarriage
 f_ufr = R_steer*[FX_fr; FY_fr; 0];

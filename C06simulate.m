@@ -3,7 +3,7 @@
              %oltre al grafico manda toworkspace
 
 % substitute parameters and set initial values and simulation time
-tspan = [0 10];
+tspan = [0 2];
 
 % initial values for lagrangian variables
 y_0     =       0; % yaw
@@ -15,27 +15,27 @@ Dp_0    =       0; % pitch rate
 z_CG_0  =  -0.388; % z position
 Dz_CG_0 =       0; % z speed
 x_CG_0  =       0; % x position
-Dx_CG_0 =       0; % x speed
+Dx_CG_0 =       0.00001; % x speed
 y_CG_0  =       0; % y position
-Dy_CG_0 =       0; % y speed
+Dy_CG_0 =       0.00001; % y speed
 
-% group initial values, same order as in the S array
-s0 = zeros(length(S),1);
-for i = 1:length(S)
-    s0(i) = eval([ char(S(i)) '_0;']);
-end
+s0 = [ y_0;  p_0;  r_0;  x_CG_0;  y_CG_0;  z_CG_0;  
+      Dy_0; Dp_0; Dr_0; Dx_CG_0; Dy_CG_0; Dz_CG_0];
 
-% convert vectorspace model to matlab function for use by ode45
-M = matlabFunction(Vp,'Vars',{'t','Y'});
+% % group initial values, same order as in the S array
+% s0 = zeros(length(S),1);
+% for i = 1:length(S)
+%     s0(i) = eval([ char(S(i)) '_0;']);
+% end
 
 % where the magic happens
 sol = ode45(M,tspan,s0);
 clear tspan
 
-names = cell(1,length(S)+1);
+names = cell(1,length(x)+1);
 names{1} = 't';
-for i = 1:length(S)
-    names{i+1}=char(S(i));
+for i = 1:length(x)
+    names{i+1}=char(x(i));
 end
 sim = array2table([sol.x.' sol.y.'],'VariableNames',names);
 clear sol
