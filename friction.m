@@ -1,18 +1,10 @@
-tic
+
 % wheel angular velocities
 N_fr = 38.5;
 N_fl = 38.5;
 N_rr = 38.5;
 N_rl = 38.5;
 
-% steer angle (no ackermann geometry for now)
-a_s = 0;
-
-% passive rotation matrix from undercarriage frame to front wheel frames
-R_steer = [ cos(a_s) -sin(a_s)  0
-            sin(a_s)  cos(a_s)  0
-            0         0         1 ];
-toc
 % wheel vertical forces for friction calculation
 FZ_fr = - k_f * d_fr - b_f * Dd_fr;
 FZ_fl = - k_f * d_fl - b_f * Dd_fl;
@@ -25,7 +17,7 @@ Dw_fl = subs(diff(w_fl, t), diff(q(t),t), Dq(t));
 Dw_rr = subs(diff(w_rr, t), diff(q(t),t), Dq(t));
 Dw_rl = subs(diff(w_rl, t), diff(q(t),t), Dq(t));
 
-toc
+
 % ground velocities wrt corresponding wheel frames
 v_ufr = R_steer\Rz\Dw_fr;
 v_ufl = R_steer\Rz\Dw_fl;
@@ -70,20 +62,15 @@ SA_fr = atan(-v_uyfr/v_uxfr);
 SA_fl = atan(-v_uyfl/v_uxfl);
 SA_rr = atan(-v_uyrr/v_uxrr);
 SA_rl = atan(-v_uyrl/v_uxrl);
-toc
+
 tyreID = 'Hoosier FSAE 20.5x7.0-13 43129 @ 12 psi, 7 inch rim';
-[FX_fr, FY_fr, ~, ~] = PAC96(SL_fr, SA_fr, 0, FZ_fr, tyreID);
-[FX_fl, FY_fl, ~, ~] = PAC96(SL_fl, SA_fl, 0, FZ_fl, tyreID);
-[FX_rr, FY_rr, ~, ~] = PAC96(SL_rr, SA_rr, 0, FZ_rr, tyreID);
-[FX_rl, FY_rl, ~, ~] = PAC96(SL_rl, SA_rl, 0, FZ_rl, tyreID);
-toc
-% planar forces at contact points wrt undercarriage
-f_ufr = R_steer*[FX_fr; FY_fr; 0];
-f_ufl = R_steer*[FX_fl; FY_fl; 0];
-f_urr =         [FX_rr; FY_rr; 0];
-f_url =         [FX_rl; FY_rl; 0];
-%f_ufr = R_steer*[FX_fr; 0; 0];
-%f_ufl = R_steer*[FX_fl; 0; 0];
-%f_urr =         [FX_rr; 0; 0];
-%f_url =         [FX_rl; 0; 0];
-toc
+% pure slip equations
+[~, ~, FX_fr, FY_fr] = PAC96(SL_fr, SA_fr, 0, FZ_fr, tyreID);
+[~, ~, FX_fl, FY_fl] = PAC96(SL_fl, SA_fl, 0, FZ_fl, tyreID);
+[~, ~, FX_rr, FY_rr] = PAC96(SL_rr, SA_rr, 0, FZ_rr, tyreID);
+[~, ~, FX_rl, FY_rl] = PAC96(SL_rl, SA_rl, 0, FZ_rl, tyreID);
+% combined slip equations
+% [FX_fr, FY_fr, ~, ~] = PAC96(SL_fr, SA_fr, 0, FZ_fr, tyreID);
+% [FX_fl, FY_fl, ~, ~] = PAC96(SL_fl, SA_fl, 0, FZ_fl, tyreID);
+% [FX_rr, FY_rr, ~, ~] = PAC96(SL_rr, SA_rr, 0, FZ_rr, tyreID);
+% [FX_rl, FY_rl, ~, ~] = PAC96(SL_rl, SA_rl, 0, FZ_rl, tyreID);

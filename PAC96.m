@@ -82,5 +82,4 @@ D_ykappa = F_y0 ./ (cos(C_ykappa.*atan(B_ykappa.*S_Hykappa)));
 
 F_y = D_ykappa.*cos(C_ykappa.*atan(B_ykappa.*(kappa+S_Hykappa)))+S_Vykappa;
 
-
 end

@@ -34,9 +34,6 @@ D = 1/2 * b_f * Dd_fr^2 ...
   + 1/2 * b_r * Dd_rl^2;
 
 % Lagrangian
-L = simplify(T - V);
-
-% Lagrange Equations: dt(d(dq_k)(L)) - dq_k(L) + ddq_k(D) = Q_k
-% the following are the left hand sides of the lagrange equations as shown
-% above
-E_LHS = lagrange(t, q, Dq, DDq, L, D);
+T=simplify(T);
+V=simplify(V);
+%L = simplify(T - V);

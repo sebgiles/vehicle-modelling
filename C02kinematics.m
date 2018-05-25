@@ -8,6 +8,20 @@ P_fl = [ l_f -T_f/2 Z_f].';
 P_rr = [-l_r  T_r/2 Z_r].';
 P_rl = [-l_r -T_r/2 Z_r].';
 
+% steer angle (no ackermann geometry for now)
+a_s = 0; % TODO: steering
+
+% passive rotation matrix from undercarriage frame to front wheel frames
+if linear
+    R_steer = [  1  0 a_s
+                 0  1   0
+               a_s  0   1];
+else
+    R_steer = [ cos(a_s) -sin(a_s)  0
+                sin(a_s)  cos(a_s)  0
+                0         0         1 ];
+end
+
 % time
 syms t
 
