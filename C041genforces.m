@@ -1,13 +1,6 @@
 % apply virtual work principle to find effect of external forces on
 % langrangian coordinates
-function Q = C04_1genforces(f,p,q,t)
-
-  f = f(t);
-  p = p(t);
-
-  if isa(q,'symfun')
-    q = q(t);
-  end
+function Q = C041genforces(f,p,q)
   % number of DOFs
   n = length(q);
   % number of external forces
@@ -23,3 +16,4 @@ function Q = C04_1genforces(f,p,q,t)
       Q(i) = Q(i) + f(:,j).' * [dpxdq;dpydq;dpzdq];
     end
   end
+end
