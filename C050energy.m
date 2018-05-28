@@ -44,4 +44,4 @@ T_rot = 1/2*W.'*I*W;
 T = T_rot + T_trans;
 
 T=simplify(T);
-U=simplify(T);
+U=simplify(U);

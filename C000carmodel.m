@@ -1,12 +1,19 @@
 function [BodyDynamicsFunction, WheelLoadsFunction, ContactPointVelocitiesFunction] = C000carmodel()
 
 %% Build the Algebraic Car model
+
+disp 'defining car parameters'
 C010parameters
 C020inputs
+disp 'defining coordinate systems'
 C030coordinates
+disp 'evaluating suspension kinematics'
 C040suspension
+disp 'evaluating energy fucntions'
 C050energy
+disp 'defining road contact interface'
 C060road
+disp 'compiling lagrange equations'
 C070lagrange
 
 %% Dynamic system definition
@@ -15,7 +22,7 @@ C070lagrange
 x = [q;Dq];
 
 % state derivative function
-xdot = [q; qdotdot];
+xdot = [Dq; qdotdot];
 
 % Wheel load output function
 FZ = [FZ_fr,FZ_fl,FZ_rr,FZ_rl];
@@ -35,7 +42,12 @@ xdot_ = subs(xdot(t), [q(t); Dq(t)], x);
 FZ_   = subs(  FZ(t), [q(t); Dq(t)], x);
 CPV_  = subs( CPV(t), [q(t); Dq(t)], x);
 
+disp 'writing body dynamics function to file'
 BodyDynamicsFunction = matlabFunction(xdot_, 'Vars', {x, u, params},'File','C210BodyDynamicsFunction');
+
+disp 'writing wheel loads function to file'
 WheelLoadsFunction  = matlabFunction(FZ_, 'Vars', {x, params},'File','C220WheelLoadsFunction');
+
+disp 'writing contact point velocities function to file'
 ContactPointVelocitiesFunction = matlabFunction(CPV_, 'Vars', {x, steer, params},'File','C230ContactPointVelocitiesFunction');
 end
