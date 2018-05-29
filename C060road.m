@@ -17,8 +17,8 @@ Dw_rr = subs(diff(w_rr, t), diff(q(t),t), Dq(t));
 Dw_rl = subs(diff(w_rl, t), diff(q(t),t), Dq(t));
 
 % contact point velocities wrt corresponding wheel frames
-v_ufr = R_steer\Rz\Dw_fr;
-v_ufl = R_steer\Rz\Dw_fl;
+v_ufr = R_steer\(Rz\Dw_fr);
+v_ufl = R_steer\(Rz\Dw_fl);
 v_urr = Rz\Dw_rr;
 v_url = Rz\Dw_rl;
 

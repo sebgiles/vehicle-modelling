@@ -57,7 +57,7 @@ R = Rz*Ry*Rx ;
 
 %% Rotation Matrix from undercarriage frame to wheel frame
 if linearized
-    R_steer = [     1     0  steer
+    R_steer = [     1     0  -steer
                     0     1      0
                 steer     0      1];
 else
