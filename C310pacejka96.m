@@ -1,4 +1,4 @@
-function [F_x, F_y, F_x0, F_y0] = C310pacejka96(kappa, alpha, gamma, F_z, tyre)
+function [F_x, F_y] = C310pacejka96(kappa, alpha, gamma, F_z, tyre)
 
 T = tyre;
 
