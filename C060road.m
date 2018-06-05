@@ -33,4 +33,3 @@ f_fr = Rz*R_steer*[FX_fr; FY_fr; 0];
 f_fl = Rz*R_steer*[FX_fl; FY_fl; 0];
 f_rr = Rz*        [FX_rr; FY_rr; 0];
 f_rl = Rz*        [FX_rl; FY_rl; 0];
-

@@ -31,7 +31,7 @@ Rz = [ cos(y)  -sin(y)        0
        sin(y)   cos(y)        0
             0        0        1 ];
 if linearized
-  % linearized pitch rotation matrix
+  % linearized roll rotation matrix
   Ry = [ 1 0 p
          0 1 0
          p 0 1 ];
@@ -57,9 +57,9 @@ R = Rz*Ry*Rx ;
 
 %% Rotation Matrix from undercarriage frame to wheel frame
 if linearized
-    R_steer = [     1     0  -steer
-                    0     1      0
-                steer     0      1];
+    R_steer = [     1 -steer      0
+                steer      1      0
+                    0      0      1];
 else
     R_steer = [ cos(steer) -sin(steer)  0
                 sin(steer)  cos(steer)  0

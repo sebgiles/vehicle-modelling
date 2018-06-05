@@ -52,7 +52,6 @@ WIDTH                    = 0.1778               $Nominal section width of the ty
 ASPECT_RATIO             = 0.1829               $Nominal aspect ratio
 RIM_RADIUS               = 0.1651               $Nominal rim radius 
 RIM_WIDTH                = 0.1778               $Rim width 
-NOMPRES                  = 82740
 $----------------------------------------------------------------shape
 [SHAPE]
 {radial width}
@@ -88,14 +87,14 @@ $--------------------------------------------------------------scaling
 [SCALING_COEFFICIENTS]
  LFZO                    = 1                    $Scale factor of nominal (rated) load
  LCX                     = 1                    $Scale factor of Fx shape factor
- LMUX                    = 0.6                    $Scale factor of Fx peak friction coefficient
+ LMUX                    = 1                    $Scale factor of Fx peak friction coefficient
  LEX                     = 1                    $Scale factor of Fx curvature factor
  LKX                     = 1                    $Scale factor of Fx slip stiffness
  LHX                     = 1                    $Scale factor of Fx horizontal shift
  LVX                     = 1                    $Scale factor of Fx vertical shift
  LGAX                    = 1                    $Scale factor of camber for Fx
  LCY                     = 1                    $Scale factor of Fy shape factor
- LMUY                    = 0.6                    $Scale factor of Fy peak friction coefficient
+ LMUY                    = 1                    $Scale factor of Fy peak friction coefficient
  LEY                     = 1                    $Scale factor of Fy curvature factor
  LKY                     = 1                    $Scale factor of Fy cornering stiffness
  LHY                     = 1                    $Scale factor of Fy horizontal shift

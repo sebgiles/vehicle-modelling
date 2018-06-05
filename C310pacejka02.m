@@ -12,7 +12,7 @@ kappa_x = kappa + S_Hx;
 
 gamma_x = gamma.*T.LGAX;
 
-S_Vx = F_z.* (T.PVX1 + T.PVX2.*df_z).*T.LVX.*T.LMUX;
+S_Vx =  F_z.* (T.PVX1 + T.PVX2.*df_z).*T.LVX.*T.LMUX;
 
 K_x = F_z.*(T.PKX1+T.PKX2.*df_z).*exp(T.PKX3.*df_z).*T.LKX;
 
@@ -31,11 +31,11 @@ F_x0 = D_x .* sin(C_x.*atan(B_x.*kappa_x  - E_x.* (B_x.*kappa_x - atan(B_x.*kapp
 % pure side F
 gamma_y=gamma.*T.LGAY;
 
-S_Hy=(T.PHY1+T.PHY2.*df_z).*T.LHY + T.PHY3.*gamma_y;
+S_Hy = (T.PHY1+T.PHY2.*df_z).*T.LHY + T.PHY3.*gamma_y;
 
 alpha_y=alpha+S_Hy;
 
-S_Vy= F_z.*((T.PVY1+T.PVY2.*df_z).*T.LVY+(T.PVY3+T.PVY4.*df_z).*gamma_y).*T.LMUY;
+S_Vy = F_z.*((T.PVY1+T.PVY2.*df_z).*T.LVY+(T.PVY3+T.PVY4.*df_z).*gamma_y).*T.LMUY;
 
 K_y0=T.PKY1.*F_z0.*sin(2.*atan((F_z)./(T.PKY2.*F_z0.*T.LFZO))).*T.LFZO.*T.LKY;
 

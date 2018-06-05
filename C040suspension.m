@@ -11,8 +11,8 @@ P_rl = [-l_r; -T_r/2; Z_r];
 % Suspension attachment point coordinates wrt inertial frame
 p_fr = p_CG + R*P_fr ;
 p_fl = p_CG + R*P_fl ;
-p_rl = p_CG + R*P_rl ;
 p_rr = p_CG + R*P_rr ;
+p_rl = p_CG + R*P_rl ;
 
 % suspension travel
 d_fr = -[0 0 1]*p_fr + h_f;
