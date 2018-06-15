@@ -1,10 +1,49 @@
 function [BodyDynamicsFunction, WheelLoadsFunction, ContactPointVelocitiesFunction] = C000carmodel()
 
-%% Build the Algebraic Car model
 
+%% Car parametrization
 disp 'defining car parameters'
-C010parameters
-C020inputs
+% gravitational acceleration
+syms g
+% track widths
+syms T_f T_r
+% Front / Rear Axle Distance from CG
+syms l_f l_r
+% Front / Rear Roll center Height
+syms Z_f Z_r
+% CG no load height
+syms h_CG
+% Front / Rear caster Angle
+syms
+% Wheel Radius
+syms
+% spring coefficients
+syms k_f k_r
+% damper coefficients
+syms b_f b_r
+% vehicle mass
+syms m
+% vehicle inertia tensor wrt body frame
+syms Ixx Iyy Izz Ixz
+
+% would be cool to change this
+params = [T_f; T_r; l_f; l_r; Z_f; Z_r; h_CG; k_f; k_r; b_f; b_r; g; m;
+              Ixx; Iyy; Izz; Ixz];
+          
+%% Inputs Definition
+% steer angle
+syms steer
+% planar wheel forces
+syms FX_fr FY_fr FX_fl FY_fl FX_rr FY_rr FX_rl FY_rl
+% self aligning wheel torques
+syms MZ_fr MS_fl MZ_rr MZ_rl
+
+F = [FX_fr; FY_fr; FX_fl; FY_fl; FX_rr; FY_rr; FX_rl; FY_rl];
+
+% inputs vector
+u = [F; steer];
+
+%%
 disp 'defining coordinate systems'
 C030coordinates
 disp 'evaluating suspension kinematics'
