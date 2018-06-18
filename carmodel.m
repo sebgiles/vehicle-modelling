@@ -50,16 +50,18 @@ syms t
 syms   y(t)  p(t)  r(t)
 syms  Dy(t) Dp(t) Dr(t)
 syms DDy   DDp   DDr
-
 % CG position wrt inertial frame & derivatives
 syms   x_CG(t)  y_CG(t)  z_CG(t)
 syms  Dx_CG(t) Dy_CG(t) Dz_CG(t)
 syms DDx_CG   DDy_CG   DDz_CG
-
 % front / rear steer angles
 syms   delta_f(t)   delta_r(t)
 syms  Ddelta_f(t)  Ddelta_r(t)
 syms DDdelta_f    DDdelta_r
+% wheel rotation angles
+syms   gamma_fr(t)   gamma_fl(t)   gamma_rr(t)   gamma_rl(t)
+syms  Dgamma_fr(t)  Dgamma_fl(t)  Dgamma_rr(t)  Dgamma_rl(t)
+syms DDgamma_fr    DDgamma_fl    DDgamma_rr    DDgamma_rl
 
 % various handy vector combinations of the above
 q   = [  y;   p;   r;   x_CG;   y_CG;   z_CG];
@@ -72,7 +74,6 @@ p_CG = [x_CG; y_CG; z_CG];
 % velocity of CG wrt inertial frame
 v_CG = [Dx_CG; Dy_CG; Dz_CG];
 %% ROTATION MATRICES from Inertial frame to body frame              
-
 % yaw rotation matrix
 Rz=[cos(y) -sin(y) 0
     sin(y) cos(y)  0
@@ -121,7 +122,7 @@ else
 end
 %% SUSPENSION                                                       
 % virtual spring length at no load
-h_f = h_CG - q_f ;
+h_f = h_CG - q_f;
 h_r = h_CG - q_r;
 % Suspension attachment point coordinates wrt body frame
 P_fr = [ l_f;  t_f/2; q_f];
@@ -144,7 +145,7 @@ Dd_fl = subs(diff(d_fl,t), diff(q(t)), Dq(t));
 Dd_rr = subs(diff(d_rr,t), diff(q(t)), Dq(t));
 Dd_rl = subs(diff(d_rl,t), diff(q(t)), Dq(t));
 %% ENERGY                                                           
-% damper-dissipated energy (Rayleigh dissipation function)
+% suspension damper-dissipated energy (Rayleigh dissipation function)
 D = 1/2 * b_f * Dd_fr^2 ...
   + 1/2 * b_f * Dd_fl^2 ...
   + 1/2 * b_r * Dd_rr^2 ...
