@@ -2,7 +2,7 @@ function [BodyDynamicsFunction, WheelLoadsFunction, ContactPointVelocitiesFuncti
 if nargin < 1
     linearized = false;
 end
-%% Car parametrization                                              
+%% Car parametrization
 disp 'defining car parameters'
 % gravitational acceleration
 syms g
@@ -10,9 +10,9 @@ syms g
 syms t_f t_r
 % Front / Rear Axle Distance from CG
 syms l_f l_r
-% Front / Rear Roll center vertical offset from CG
+% Front / Rear Roll center height
 syms q_f q_r
-% CG no load height
+% CG ride height
 syms h_CG
 % Front / Rear Steer Inertia
 syms I_f I_r
@@ -36,16 +36,16 @@ syms r_0
 syms I_w
 % have to update / change this
 params = [T_f; T_r; l_f; l_r; Z_f; Z_r; h_CG; k_f; k_r; b_f; b_r; g; m; Ixx; Iyy; Izz; Ixz];
-%% Inputs Definition                                                
-% front steer moment
+%% Inputs Definition
+% Front / Rear steer torques
 syms M_sf M_sr
 % planar wheel forces
 syms FX_fr FY_fr FX_fl FY_fl FX_rr FY_rr FX_rl FY_rl
 % self aligning wheel torques
 syms MZ_fr MZ_fl MZ_rr MZ_rl
-%% TIME                                                             
+%% TIME
 syms t
-%% CAR STATE COORDINATES                                            
+%% CAR STATE COORDINATES
 % body orientation angles & derivatives (ZYX Euler - YPR - Tait Bryan)
 syms   y(t)  p(t)  r(t)
 syms  Dy(t) Dp(t) Dr(t)
@@ -73,8 +73,8 @@ p_CG = [x_CG; y_CG; z_CG];
 
 % velocity of CG wrt inertial frame
 v_CG = [Dx_CG; Dy_CG; Dz_CG];
-%% ROTATION MATRICES from Inertial frame to body frame              
-% yaw rotation matrix
+%% ROTATION MATRICES
+% yaw rotation matrix (ROTATION MATRIX from Inertial frame to underriage)
 Rz=[cos(y) -sin(y) 0
     sin(y) cos(y)  0
     0      0       1];
@@ -101,40 +101,51 @@ end
 % this matrix carries all information about vehicle attitude,
 % it can be used to rotate vectors in body to inertial frame
 R = Rz*Ry*Rx ;
-%% Steering Rotation Matrices                                       
-% from undercarriage frame to wheel frame (no ackermann)
+%% Steering Rotation Matrices
+% from undercarriage frame to wheel frames (no ackermann)
 if linearized
-    Sr=[1       -delta_r 0
-        delta_r 1        0
-        0       0        1];
-    
-    Sf=[1       -delta_f 0
+    Sfr=[1      -delta_f 0
         delta_f 1        0
         0       0        1];
+    Sfl=[1      -delta_f 0
+        delta_f 1        0
+        0       0        1];
+    Srr=[1      -delta_r 0
+        delta_r 1        0
+        0       0        1];
+    Srr=[1      -delta_r 0
+        delta_r 1        0
+        0       0        1];
 else
-    Sr=[cos(delta_r) -sin(delta_r) 0
-        sin(delta_f) cos(delta_r)  0
-        0            0             1 ];
+    Sfr=[cos(delta_f) -sin(delta_f) 0
+        sin(delta_f)  cos(delta_f)  0
+        0             0             1 ];
+    Sfl=[cos(delta_f) -sin(delta_f) 0
+        sin(delta_f)  cos(delta_f)  0
+        0             0             1 ];
     
-    Sf=[cos(delta_f) -sin(delta_f) 0
-        sin(delta_f) cos(delta_f)  0
-        0            0             1 ];
+    Srr=[cos(delta_r) -sin(delta_r) 0
+        sin(delta_f)  cos(delta_r)  0
+        0             0             1 ];
+    Srl=[cos(delta_r) -sin(delta_r) 0
+        sin(delta_f)  cos(delta_r)  0
+        0             0             1 ];
 end
-%% SUSPENSION                                                       
+%% SUSPENSION
 % virtual spring length at no load
-h_f = h_CG - q_f;
-h_r = h_CG - q_r;
-% Suspension attachment point coordinates wrt body frame
-P_fr = [ l_f;  t_f/2; q_f];
-P_fl = [ l_f; -t_f/2; q_f];
-P_rr = [-l_r;  t_r/2; q_r];
-P_rl = [-l_r; -t_r/2; q_r];
+h_f = q_f + m*g/k*l_r/(l_r+l_f);
+h_r = q_r + m*g/k*l_f/(l_r+l_f);
+% spring to frame attachment point coordinates wrt body frame
+P_fr = [ l_f;  t_f/2; h_CG-q_f];
+P_fl = [ l_f; -t_f/2; h_CG-q_f];
+P_rr = [-l_r;  t_r/2; h_CG-q_r];
+P_rl = [-l_r; -t_r/2; h_CG-q_r];
 % Suspension attachment point coordinates wrt inertial frame
 p_fr = p_CG + R*P_fr ;
 p_fl = p_CG + R*P_fl ;
 p_rr = p_CG + R*P_rr ;
 p_rl = p_CG + R*P_rl ;
-% suspension travel
+% suspension displacement
 d_fr = [0 0 1]*p_fr + h_f;
 d_fl = [0 0 1]*p_fl + h_f;
 d_rr = [0 0 1]*p_rr + h_r;
@@ -144,16 +155,16 @@ Dd_fr = subs(diff(d_fr,t), diff(q(t)), Dq(t));
 Dd_fl = subs(diff(d_fl,t), diff(q(t)), Dq(t));
 Dd_rr = subs(diff(d_rr,t), diff(q(t)), Dq(t));
 Dd_rl = subs(diff(d_rl,t), diff(q(t)), Dq(t));
-%% ENERGY                                                           
+%% ENERGY
 % suspension damper-dissipated energy (Rayleigh dissipation function)
 D = 1/2 * b_f * Dd_fr^2 ...
-  + 1/2 * b_f * Dd_fl^2 ...
-  + 1/2 * b_r * Dd_rr^2 ...
-  + 1/2 * b_r * Dd_rl^2;
+    + 1/2 * b_f * Dd_fl^2 ...
+    + 1/2 * b_r * Dd_rr^2 ...
+    + 1/2 * b_r * Dd_rl^2;
 
 % energy stored in suspension springs
 U_spring = 1/2 * k_f * (d_fr^2 + d_fl^2) ...
-         + 1/2 * k_r * (d_rl^2 + d_rr^2);
+    + 1/2 * k_r * (d_rl^2 + d_rr^2);
 
 % gravitational potential energy
 U_g = -m*g*z_CG;
@@ -164,12 +175,13 @@ U = U_spring + U_g;
 % translational kinetic energy
 T_trans = 1/2*m*(v_CG.')*v_CG;
 
+
 if linearized
-  E = [ 0  -sin(y)  p*cos(y)
+    E = [ 0  -sin(y)  p*cos(y)
         0   cos(y)  p*sin(y)
         1        0        -p ];
 else
-  E = [ 0 -sin(y)  cos(p)*cos(y)
+    E = [ 0 -sin(y)  cos(p)*cos(y)
         0  cos(y)  cos(p)*sin(y)
         1       0        -sin(p) ];
 end
@@ -181,20 +193,20 @@ W = R\w;
 
 % Inertia Tensor
 I = [Ixx   0 Ixz;
-       0 Iyy   0;
-     Ixz   0 Izz];
- 
+    0 Iyy   0;
+    Ixz   0 Izz];
+
 % rotational kinetic energy
 T_rot = 1/2*W.'*I*W;
 
 % total kinetic energy
 T = T_rot + T_trans;
-%% ROAD                                                             
-% vertical projection to road matrix 
-P = [1 0 0; 
-     0 1 0; 
-     0 0 0];
- 
+%% ROAD
+% vertical projection to road matrix
+P = [1 0 0;
+    0 1 0;
+    0 0 0];
+
 % wheel contact points are obtained by projecting suspension attachment
 % points on the road surface
 w_fr = P*p_fr;
@@ -225,12 +237,12 @@ f_fr = Rz*R_steer*[FX_fr; FY_fr; 0];
 f_fl = Rz*R_steer*[FX_fl; FY_fl; 0];
 f_rr = Rz*        [FX_rr; FY_rr; 0];
 f_rl = Rz*        [FX_rl; FY_rl; 0];
-%% LAGRANGE                                                         
+%% LAGRANGE
 % all external applied forces
 f = [f_fr f_fl f_rr f_rl];
 % respective application points
 p = [w_fr w_fl w_rr w_rl];
-% generalized forces 
+% generalized forces
 Q = C071genforces(f(t),p(t),q(t));
 
 % Potential energy is independent of coordinate derivatives, so second
@@ -248,8 +260,8 @@ X  = sym('X', [6, 1]);
 qdotdot = solve(LHS == X, DDq);
 
 % convert struct to array
-qdotdot = [qdotdot.DDy;    qdotdot.DDp;    qdotdot.DDr; 
-           qdotdot.DDx_CG; qdotdot.DDy_CG; qdotdot.DDz_CG];
+qdotdot = [qdotdot.DDy;    qdotdot.DDp;    qdotdot.DDr;
+    qdotdot.DDx_CG; qdotdot.DDy_CG; qdotdot.DDz_CG];
 
 %  calculate values for placeholders
 RHS = subs(diff(functionalDerivative(U, Dq),t),diff(q), Dq) ...
@@ -259,7 +271,7 @@ RHS = subs(diff(functionalDerivative(U, Dq),t),diff(q), Dq) ...
 
 % replace placeholders
 qdotdot = subs(qdotdot, X, RHS);
-%% Dynamic system definition                                        
+%% Dynamic system definition
 % state vector
 x = [q;Dq];
 
@@ -274,7 +286,7 @@ FZ = [FZ_fr,FZ_fl,FZ_rr,FZ_rl];
 
 % contact point velocities output function
 CPV = [v_ufr,v_ufl,v_urr,v_url];
-%% Function handles contruction and saving                          
+%% Function handles contruction and saving
 % redefine lagrangian variables and derivatives so we don't need to worry
 % about the time variable
 syms y p r Dy Dp Dr x_CG y_CG z_CG Dx_CG Dy_CG Dz_CG
