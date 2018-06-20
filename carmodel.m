@@ -63,16 +63,17 @@ syms   gamma_fr(t)   gamma_fl(t)   gamma_rr(t)   gamma_rl(t)
 syms  Dgamma_fr(t)  Dgamma_fl(t)  Dgamma_rr(t)  Dgamma_rl(t)
 syms DDgamma_fr    DDgamma_fl    DDgamma_rr    DDgamma_rl
 
+Dgamma = [Dgamma_fr(t) Dgamma_fl(t) Dgamma_rr(t) Dgamma_rl(t)];
 % various handy vector combinations of the above
-q   = [  y;   p;   r;   x_CG;   y_CG;   z_CG];
-Dq  = [ Dy;  Dp;  Dr;  Dx_CG;  Dy_CG;  Dz_CG];
-DDq = [DDy; DDp; DDr; DDx_CG; DDy_CG; DDz_CG];
+q   = [  y;   p;   r;   x_CG;   y_CG;   z_CG; delta_f(t); delta_r(t); ...
+    gamma_fr(t); gamma_fl(t); gamma_rr(t); gamma_rl(t)];
+Dq  = [ Dy;  Dp;  Dr;  Dx_CG;  Dy_CG;  Dz_CG; Ddelta_f(t); Ddelta_r(t); ...
+    Dgamma_fr(t); Dgamma_fl(t); Dgamma_rr(t); Dgamma_rl(t)];
+DDq = [DDy; DDp; DDr; DDx_CG; DDy_CG; DDz_CG; DDdelta_f(t); DDdelta_r(t); ...
+    DDgamma_fr(t); DDgamma_fl(t); DDgamma_rr(t); DDgamma_rl(t)];
 
 % position of CG wrt inertial frame
 p_CG = [x_CG; y_CG; z_CG];
-
-% velocity of CG wrt inertial frame
-v_CG = [Dx_CG; Dy_CG; Dz_CG];
 %% ROTATION MATRICES
 % yaw rotation matrix (ROTATION MATRIX from Inertial frame to underriage)
 Rz=[cos(y) -sin(y) 0
@@ -113,7 +114,7 @@ if linearized
     Srr=[1      -delta_r 0
         delta_r 1        0
         0       0        1];
-    Srr=[1      -delta_r 0
+    Srl=[1      -delta_r 0
         delta_r 1        0
         0       0        1];
 else
@@ -140,31 +141,22 @@ P_fr = [ l_f;  t_f/2; h_CG-q_f];
 P_fl = [ l_f; -t_f/2; h_CG-q_f];
 P_rr = [-l_r;  t_r/2; h_CG-q_r];
 P_rl = [-l_r; -t_r/2; h_CG-q_r];
+P = [P_fr P_fl P_rr P_rl];
 % Suspension attachment point coordinates wrt inertial frame
-p_fr = p_CG + R*P_fr ;
-p_fl = p_CG + R*P_fl ;
-p_rr = p_CG + R*P_rr ;
-p_rl = p_CG + R*P_rl ;
+p = p_CG + R*P;
+
 % suspension displacement
-d_fr = [0 0 1]*p_fr + h_f;
-d_fl = [0 0 1]*p_fl + h_f;
-d_rr = [0 0 1]*p_rr + h_r;
-d_rl = [0 0 1]*p_rl + h_r;
+d = - [0 0 1]*p - [h_f h_f h_r h_r];
+
 % suspension velocities
-Dd_fr = subs(diff(d_fr,t), diff(q(t)), Dq(t));
-Dd_fl = subs(diff(d_fl,t), diff(q(t)), Dq(t));
-Dd_rr = subs(diff(d_rr,t), diff(q(t)), Dq(t));
-Dd_rl = subs(diff(d_rl,t), diff(q(t)), Dq(t));
+Dd = subs(diff(d,t), diff(q(t)), Dq(t));
+
 %% ENERGY
 % suspension damper-dissipated energy (Rayleigh dissipation function)
-D = 1/2 * b_f * Dd_fr^2 ...
-    + 1/2 * b_f * Dd_fl^2 ...
-    + 1/2 * b_r * Dd_rr^2 ...
-    + 1/2 * b_r * Dd_rl^2;
+D = 1/2 * [b_f b_f b_r b_r].'*Dd.^2;  
 
 % energy stored in suspension springs
-U_spring = 1/2 * k_f * (d_fr^2 + d_fl^2) ...
-    + 1/2 * k_r * (d_rl^2 + d_rr^2);
+U_spring = 1/2 * [k_f k_f k_r k_r].'*d.^2;
 
 % gravitational potential energy
 U_g = -m*g*z_CG;
@@ -173,15 +165,15 @@ U_g = -m*g*z_CG;
 U = U_spring + U_g;
 
 % translational kinetic energy
-T_trans = 1/2*m*(v_CG.')*v_CG;
-
+T_trans = 1/2 * m   * (Dx_CG.^2 + Dy_CG.^2 + Dz_CG.^2) ...
+        + 1/2 * m_u * (Dx_CG.^2 + Dy_CG.^2);
 
 if linearized
-    E = [ 0  -sin(y)  p*cos(y)
+    E=[ 0  -sin(y)  p*cos(y)
         0   cos(y)  p*sin(y)
         1        0        -p ];
 else
-    E = [ 0 -sin(y)  cos(p)*cos(y)
+    E=[ 0 -sin(y)  cos(p)*cos(y)
         0  cos(y)  cos(p)*sin(y)
         1       0        -sin(p) ];
 end
@@ -192,58 +184,53 @@ w = E * [Dy; Dp; Dr];
 W = R\w;
 
 % Inertia Tensor
-I = [Ixx   0 Ixz;
-    0 Iyy   0;
-    Ixz   0 Izz];
+I=[ Ixx 0   Ixz;
+    0   Iyy 0;
+    Ixz 0   Izz];
 
 % rotational kinetic energy
-T_rot = 1/2*W.'*I*W;
+T_rot = 1/2*W.'*I*W + 1/2*I_u*Dy.^2;
 
+T_w = 1/2 * I_w * sum(Dgamma.^2);
+
+T_steer = 1/2 * I_f * (Ddelta_f.^2) + 1/2 * I_r * (Ddelta_r.^2);
+ 
 % total kinetic energy
-T = T_rot + T_trans;
-%% ROAD
-% vertical projection to road matrix
-P = [1 0 0;
-    0 1 0;
-    0 0 0];
-
-% wheel contact points are obtained by projecting suspension attachment
-% points on the road surface
-w_fr = P*p_fr;
-w_fl = P*p_fl;
-w_rr = P*p_rr;
-w_rl = P*p_rl;
+T = T_rot + T_trans + T_w + T_steer;
+%% WHEELS
+% wheel centers
+w = p.*[1;1;0]-[0;0;r_0];
 
 % wheel contact point velocities wrt inertial frame
-Dw_fr = subs(diff(w_fr, t), diff(q(t),t), Dq(t));
-Dw_fl = subs(diff(w_fl, t), diff(q(t),t), Dq(t));
-Dw_rr = subs(diff(w_rr, t), diff(q(t),t), Dq(t));
-Dw_rl = subs(diff(w_rl, t), diff(q(t),t), Dq(t));
+Dw = subs(diff(w, t), diff(q(t),t), Dq(t));
 
 % contact point velocities wrt corresponding wheel frames
-v_ufr = R_steer\(Rz\Dw_fr);
-v_ufl = R_steer\(Rz\Dw_fl);
-v_urr = Rz\Dw_rr;
-v_url = Rz\Dw_rl;
+v_ufr = Sfr\(Rz\Dw(:,1));
+v_ufl = Sfl\(Rz\Dw(:,2));
+v_urr = Srr\(Rz\Dw(:,3));
+v_url = Srl\(Rz\Dw(:,4));
 
 % wheel loads for friction calculations (obtained as suspension forces)
-FZ_fr = - k_f * d_fr - b_f * Dd_fr;
-FZ_fl = - k_f * d_fl - b_f * Dd_fl;
-FZ_rr = - k_r * d_rr - b_r * Dd_rr;
-FZ_rl = - k_r * d_rl - b_r * Dd_rl;
+FZ = - k_f * d - b_f * Dd;
 
-% planar forces at contact points wrt inertial frame
-f_fr = Rz*R_steer*[FX_fr; FY_fr; 0];
-f_fl = Rz*R_steer*[FX_fl; FY_fl; 0];
-f_rr = Rz*        [FX_rr; FY_rr; 0];
-f_rl = Rz*        [FX_rl; FY_rl; 0];
+% planar forces wrt inertial frame
+f_fr = Rz*Sfr*[FX_fr; FY_fr; 0];
+f_fl = Rz*Sfl*[FX_fl; FY_fl; 0];
+f_rr = Rz*Srr*[FX_rr; FY_rr; 0];
+f_rl = Rz*Srl*[FX_rl; FY_rl; 0];
+
+f = [f_fr;f_fl;f_rr;f_rl];
+p = [];
+
+
+
 %% LAGRANGE
 % all external applied forces
 f = [f_fr f_fl f_rr f_rl];
 % respective application points
-p = [w_fr w_fl w_rr w_rl];
+p = [w_fr w_fl w_rr w_rl] - [0;0;1]*[1 1 1]*r_0;
 % generalized forces
-Q = C071genforces(f(t),p(t),q(t));
+Q = genforces(f(t),p(t),q(t));
 
 % Potential energy is independent of coordinate derivatives, so second
 % order time derivatives will only appear in the following term
