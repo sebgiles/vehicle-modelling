@@ -17,7 +17,7 @@ syms h_CG
 % Front / Rear Steer Inertia
 syms I_f I_r
 % Front Rear Right/Left mechanical trail (left indipendent just in case...)
-syms ts_fr ts_fl ts_rr rs_rl
+% syms ts_fr ts_fl ts_rr rs_rl % currently NOT USED
 % Front / Rear virtual Spring coefficients
 syms k_f k_r
 % Front / Rear virtual Damper coefficients
@@ -35,7 +35,7 @@ syms r_0
 % Wheel rotational inertia
 syms I_w
 % have to update / change this
-%params = [T_f; T_r; l_f; l_r; Z_f; Z_r; h_CG; k_f; k_r; b_f; b_r; g; m; Ixx; Iyy; Izz; Ixz];
+params = [g; t_f; t_r; l_f; l_r; q_f; q_r; h_CG; I_f; I_r; k_f; k_r; b_f; b_r; m; m_u; Ixx; Iyy; Izz; Ixz; I_u; r_0; I_w];
 %% Inputs Definition
 % Front / Rear steer torques
 syms M_sf M_sr
@@ -65,12 +65,12 @@ syms   gamma_fr(t)   gamma_fl(t)   gamma_rr(t)   gamma_rl(t)
 syms  Dgamma_fr(t)  Dgamma_fl(t)  Dgamma_rr(t)  Dgamma_rl(t)
 syms DDgamma_fr    DDgamma_fl    DDgamma_rr    DDgamma_rl
 
-Dgamma = [Dgamma_fr(t) Dgamma_fl(t) Dgamma_rr(t) Dgamma_rl(t)];
+Dgamma = [Dgamma_fr Dgamma_fl Dgamma_rr Dgamma_rl];
 % various handy vector combinations of the above
-q   = [  y;   p;   r;   x_CG;   y_CG;   z_CG; delta_f(t); delta_r(t); ...
-    gamma_fr(t); gamma_fl(t); gamma_rr(t); gamma_rl(t)];
-Dq  = [ Dy;  Dp;  Dr;  Dx_CG;  Dy_CG;  Dz_CG; Ddelta_f(t); Ddelta_r(t); ...
-    Dgamma_fr(t); Dgamma_fl(t); Dgamma_rr(t); Dgamma_rl(t)];
+q   = [  y;   p;   r;   x_CG;   y_CG;   z_CG; delta_f; delta_r; ...
+    gamma_fr; gamma_fl; gamma_rr; gamma_rl];
+Dq  = [ Dy;  Dp;  Dr;  Dx_CG;  Dy_CG;  Dz_CG; Ddelta_f; Ddelta_r; ...
+    Dgamma_fr; Dgamma_fl; Dgamma_rr; Dgamma_rl];
 DDq = [DDy; DDp; DDr; DDx_CG; DDy_CG; DDz_CG; DDdelta_f; DDdelta_r; ...
        DDgamma_fr; DDgamma_fl; DDgamma_rr; DDgamma_rl];
 
@@ -198,28 +198,23 @@ T = T_rot + T_trans + T_w + T_steer;
 %% WHEELS
 % wheel centers wrt inertial frame
 w = ps.*[1;1;0]-[0;0;r_0];
+
 % wheel contact point velocities wrt inertial frame
 v = subs(diff(w, t), diff(q(t),t), Dq(t));
-v=v(t);
-% contact point velocities wrt corresponding wheel frames
-v_w = [ Sfr\(Rz\v(:,1)) Sfl\(Rz\v(:,2)) Srr\(Rz\v(:,3)) Srl\(Rz\v(:,4)) ];
-
-% wheel loads for friction calculations (obtained as suspension forces)
-FZ = - k_f * d - b_f * Dd;
-
-% planar forces wrt inertial frame
-f=[ Rz*Sfr*[FX_fr; FY_fr; 0] ...
-	Rz*Sfl*[FX_fl; FY_fl; 0] ...
-	Rz*Srr*[FX_rr; FY_rr; 0] ...
-	Rz*Srl*[FX_rl; FY_rl; 0] ];
+v = v(t);
+% total planar force wrt inertial frame
+f= [Rz*Sfr*[FX_fr; FY_fr; 0] ...
+    Rz*Sfl*[FX_fl; FY_fl; 0] ...
+    Rz*Srr*[FX_rr; FY_rr; 0] ...
+    Rz*Srl*[FX_rl; FY_rl; 0] ];
 %% TORQUES ON BODY
-% wheel torque vectors wrt inertial frame
-M_motor = [ Rz*Sfr*[0; MW_fr; 0] ...
-            Rz*Sfl*[0; MW_fl; 0] ...
-            Rz*Srr*[0; MW_rr; 0] ...
-            Rz*Srl*[0; MW_rl; 0] ];
+% total motors/brakes reaction torques
+M_motor = Rz*Sfr*[0; MW_fr; 0] + ...
+          Rz*Sfl*[0; MW_fl; 0] + ... 
+          Rz*Srr*[0; MW_rr; 0] + ...
+          Rz*Srl*[0; MW_rl; 0] ;
 chi = [y(t);p(t);r(t)];
-M_body = E \ ([0 -r_0 0; r_0 0 0; 0 0 0]*f*[1;1;1] + M_motor);
+M_body = E \ ([0 -r_0 0; r_0 0 0; 0 0 0]*f*[1;1;1;1] + M_motor);
 %% TORQUES ON WHEELS
 M_w = [MW_fr; MW_fl; MW_rr; MW_rl] - r_0 * [FX_fr; FX_fl; FX_rr; FX_rl];
 P_w = [gamma_fr(t); gamma_fl(t); gamma_rr(t); gamma_rl(t)];
@@ -227,29 +222,32 @@ P_w = [gamma_fr(t); gamma_fl(t); gamma_rr(t); gamma_rl(t)];
 M_f = M_sf + MZ_fr + MZ_fl;
 M_r = M_sr + MZ_rr + MZ_rl;
 %% LAGRANGE
+w=w(t);
+w=w(:);
+f=f(t);
+f=f(:);
+% all external forces/torques
+F_ext = [f; M_body(t); M_w;        M_f;        M_r];
+% correpsonding application points/angles
+P_ext = [w;       chi; P_w; delta_f(t); delta_r(t)];
 % generalized forces
-F_ext = [f(t); M_body(t); M_w(t);     M_f(t);     M_r(t)];
-P_ext = [w(t);    chi(t); P_w(t); delta_f(t); delta_r(t)];
-Q = genforces(F_ext,P_ext,q(t));
-
+Q = genforces(F_ext, P_ext, q(t));
 % Potential energy is independent of coordinate derivatives, so second
 % order time derivatives will only appear in the following term
 LHS = diff(functionalDerivative(T, Dq),t);
-
 % improve speed by replacing time derivatives with correpsonding symbols
 LHS = subs(LHS, [diff(q); diff(Dq)], [Dq; DDq]);
-
 % X1 ... X11 are placeholders for all other lagrange-equation terms (which
 % do not contain second order derivatives)
-X  = sym('X', [11, 1]);
-
+X  = sym('X', [12, 1]);
 % Solve for second order derivatives (vector space representation)
 qdotdot = solve(LHS == X, DDq);
-
 % convert struct to array
 qdotdot = [qdotdot.DDy;    qdotdot.DDp;    qdotdot.DDr;
-    qdotdot.DDx_CG; qdotdot.DDy_CG; qdotdot.DDz_CG];
-
+           qdotdot.DDx_CG; qdotdot.DDy_CG; qdotdot.DDz_CG;
+           qdotdot.DDdelta_f; qdotdot.DDdelta_r;
+           qdotdot.DDgamma_fr; qdotdot.DDgamma_fl;
+           qdotdot.DDgamma_rr; qdotdot.DDgamma_rl           ];
 % calculate values for placeholders
 RHS = subs(diff(functionalDerivative(U, Dq),t),diff(q), Dq) ...
     + functionalDerivative(T-U, q)                        ...
@@ -259,37 +257,42 @@ RHS = subs(diff(functionalDerivative(U, Dq),t),diff(q), Dq) ...
 % replace placeholders
 qdotdot = subs(qdotdot, X, RHS);
 %% Dynamic system definition
-% state vector
-x = [q;Dq];
-
 % inputs vector
-u = [FX_fr; FY_fr; FX_fl; FY_fl; FX_rr; FY_rr; FX_rl; FY_rl; steer];
-
+u= [FX_fr FY_fr MZ_fr ...
+    FX_fl FY_fl MZ_fl ...
+    FX_rr FY_rr MZ_rr ...
+    FX_rl FY_rl MZ_rl ...
+    MW_fr MW_fl MW_rr MW_rl ...
+    M_sf M_sr].';
 % state derivative function
 xdot = [Dq; qdotdot];
-
-% Wheel load output function
-FZ = [FZ_fr,FZ_fl,FZ_rr,FZ_rl];
-
-% contact point velocities output function
-CPV = [v_ufr,v_ufl,v_urr,v_url];
+% wheel loads for friction calculations (obtained as suspension forces)
+FZ = - k_f * d - b_f * Dd;
+% contact point velocities wrt corresponding wheel frames
+v_w = [ Sfr\(Rz\v(:,1)) Sfl\(Rz\v(:,2)) Srr\(Rz\v(:,3)) Srl\(Rz\v(:,4)) ];
 %% Function handles contruction and saving
 % redefine lagrangian variables and derivatives so we don't need to worry
 % about the time variable
 syms y p r Dy Dp Dr x_CG y_CG z_CG Dx_CG Dy_CG Dz_CG
+syms gamma_fr gamma_fl gamma_rr gamma_rl 
+syms Dgamma_fr Dgamma_fl Dgamma_rr Dgamma_rl 
+syms delta_f delta_r Ddelta_f Ddelta_r 
 
 % replace with the new time independent coordinates
-x = [y; p; r; x_CG; y_CG; z_CG; Dy; Dp; Dr; Dx_CG; Dy_CG; Dz_CG];
+x= [y; p; r; x_CG; y_CG; z_CG; 
+    delta_f; delta_r; gamma_fr; gamma_fl; gamma_rr; gamma_rl;  
+    Dy; Dp; Dr; Dx_CG; Dy_CG; Dz_CG
+    Ddelta_f; Ddelta_r; Dgamma_fr; Dgamma_fl; Dgamma_rr; Dgamma_rl ];
 
 xdot_ = subs(xdot(t), [q(t); Dq(t)], x);
 FZ_   = subs(  FZ(t), [q(t); Dq(t)], x);
-CPV_  = subs( CPV(t), [q(t); Dq(t)], x);
+CPV_  = subs( v_w(t), [q(t); Dq(t)], x);
 
 disp 'writing body dynamics function to file'
-BodyDynamicsFunction = matlabFunction(xdot_, 'Vars', {x, u, params},'File','C210BodyDynamicsFunction');
+BodyDynamicsFunction = matlabFunction(xdot_, 'Vars', {x, u, params},'File','BodyDynamicsFunction');
 
 disp 'writing wheel loads function to file'
-WheelLoadsFunction  = matlabFunction(FZ_, 'Vars', {x, params},'File','C220WheelLoadsFunction');
+WheelLoadsFunction  = matlabFunction(FZ_, 'Vars', {x, params},'File','WheelLoadsFunction');
 
 disp 'writing contact point velocities function to file'
-ContactPointVelocitiesFunction = matlabFunction(CPV_, 'Vars', {x, steer, params},'File','C230ContactPointVelocitiesFunction');
+ContactPointVelocitiesFunction = matlabFunction(CPV_, 'Vars', {x, steer, params},'File','ContactPointVelocitiesFunction');
