@@ -209,12 +209,16 @@ f= [Rz*Sfr*[FX_fr; FY_fr; 0] ...
     Rz*Sfl*[FX_fl; FY_fl; 0] ...
     Rz*Srr*[FX_rr; FY_rr; 0] ...
     Rz*Srl*[FX_rl; FY_rl; 0] ];
+f=simplify(f(t));
+w=w(t);
+
 %% TORQUES ON BODY
 % total motors/brakes reaction torques
 M_motor = Rz*Sfr*[0; MW_fr; 0] + ...
           Rz*Sfl*[0; MW_fl; 0] + ... 
           Rz*Srr*[0; MW_rr; 0] + ...
           Rz*Srl*[0; MW_rl; 0] ;
+M_motor = simplify(M_motor);
 chi = [y(t);p(t);r(t)];
 M_body = E \ ([0 -r_0 0; r_0 0 0; 0 0 0]*f*[1;1;1;1] + M_motor);
 %% TORQUES ON WHEELS
@@ -224,14 +228,10 @@ P_w = [gamma_fr(t); gamma_fl(t); gamma_rr(t); gamma_rl(t)];
 M_f = M_sf + MZ_fr + MZ_fl;
 M_r = M_sr + MZ_rr + MZ_rl;
 %% LAGRANGE
-w=w(t);
-w=w(:);
-f=f(t);
-f=f(:);
 % all external forces/torques
-F_ext = [f; M_body(t); M_w;        M_f;        M_r];
+F_ext = [f(:); M_body(t); M_w;        M_f;        M_r];
 % correpsonding application points/angles
-P_ext = [w;       chi; P_w; delta_f(t); delta_r(t)];
+P_ext = [w(:);       chi; P_w; delta_f(t); delta_r(t)];
 % generalized forces
 Q = genforces(F_ext, P_ext, q(t));
 
@@ -239,7 +239,7 @@ Q = genforces(F_ext, P_ext, q(t));
 % order time derivatives will only appear in the following term
 LHS = diff(functionalDerivative(T, Dq),t);
 % improve speed by replacing time derivatives with correpsonding symbols
-LHS = subs(LHS, [diff(q); diff(Dq)], [Dq; DDq]);
+LHS = simplify(subs(LHS, [diff(q); diff(Dq)], [Dq; DDq]));
 % X1 ... X11 are placeholders for all other lagrange-equation terms (which
 % do not contain second order derivatives)
 X  = sym('X', [12, 1]);
@@ -251,10 +251,11 @@ qdotdot = [qdotdot.DDy;    qdotdot.DDp;    qdotdot.DDr;
            qdotdot.DDdelta_f; qdotdot.DDdelta_r;
            qdotdot.DDgamma_fr; qdotdot.DDgamma_fl;
            qdotdot.DDgamma_rr; qdotdot.DDgamma_rl           ];
+qdotdot = simplify(qdotdot);
 % calculate values for placeholders
 RHS = subs(diff(functionalDerivative(U, Dq),t),diff(q), Dq) ...
-    + functionalDerivative(T-U, q)                        ...
-    - functionalDerivative(D, Dq)                         ...
+    + simplify(functionalDerivative(T-U, q))                          ...
+    - functionalDerivative(D, Dq)                           ...
     + Q;
 
 % replace placeholders
