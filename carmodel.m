@@ -1,7 +1,7 @@
-%function [BodyDynamicsFunction, WheelLoadsFunction, ContactPointVelocitiesFunction] = carmodel(linearized)
-% if nargin < 1
+function [BodyDynamicsFunction, WheelLoadsFunction, ContactPointVelocitiesFunction] = carmodel(linearized)
+ if nargin < 1
      linearized = false;
-% end
+ end
 %% Car parametrization
 disp 'defining car parameters'
 % gravitational acceleration
@@ -211,7 +211,6 @@ f= [Rz*Sfr*[FX_fr; FY_fr; 0] ...
     Rz*Srl*[FX_rl; FY_rl; 0] ];
 f=simplify(f(t));
 w=w(t);
-
 %% TORQUES ON BODY
 % total motors/brakes reaction torques
 M_motor = Rz*Sfr*[0; MW_fr; 0] + ...
@@ -299,4 +298,4 @@ disp 'writing wheel loads function to file'
 WheelLoadsFunction  = matlabFunction(FZ_, 'Vars', {x, params},'File','WheelLoadsFunction');
 
 disp 'writing contact point velocities function to file'
-ContactPointVelocitiesFunction = matlabFunction(CPV_, 'Vars', {x, steer, params},'File','ContactPointVelocitiesFunction');
+ContactPointVelocitiesFunction = matlabFunction(CPV_, 'Vars', {x, params},'File','ContactPointVelocitiesFunction');
