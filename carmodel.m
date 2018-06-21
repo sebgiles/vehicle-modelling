@@ -34,8 +34,10 @@ syms I_u
 syms r_0
 % Wheel rotational inertia
 syms I_w
+
+syms h_f h_r
 % have to update / change this
-params = [g; t_f; t_r; l_f; l_r; q_f; q_r; h_CG; I_f; I_r; k_f; k_r; b_f; b_r; m; m_u; Ixx; Iyy; Izz; Ixz; I_u; r_0; I_w];
+params = [g; t_f; t_r; l_f; l_r; q_f; q_r; h_CG; I_f; I_r; k_f; k_r; b_f; b_r; m; m_u; Ixx; Iyy; Izz; Ixz; I_u; r_0; I_w; h_f; h_r];
 %% Inputs Definition
 % Front / Rear steer torques
 syms M_sf M_sr
@@ -136,8 +138,8 @@ else
 end
 %% SUSPENSION
 % virtual spring length at no load
-h_f = q_f + m*g/k_f*l_r/(l_r+l_f);
-h_r = q_r + m*g/k_r*l_f/(l_r+l_f);
+%h_f = q_f + m*g/k_f*l_r/(l_r+l_f);
+%h_r = q_r + m*g/k_r*l_f/(l_r+l_f);
 % spring to frame attachment point coordinates wrt body frame
 P =[l_f      l_f      l_r      l_r
     t_f/2    -t_f/2   t_r/2    -t_r/2
@@ -232,6 +234,7 @@ F_ext = [f; M_body(t); M_w;        M_f;        M_r];
 P_ext = [w;       chi; P_w; delta_f(t); delta_r(t)];
 % generalized forces
 Q = genforces(F_ext, P_ext, q(t));
+
 % Potential energy is independent of coordinate derivatives, so second
 % order time derivatives will only appear in the following term
 LHS = diff(functionalDerivative(T, Dq),t);
