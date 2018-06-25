@@ -137,9 +137,9 @@ else
         0             0             1 ];
 end
 %% SUSPENSION
-% virtual spring length at no load
-%h_f = q_f + m*g/k_f*l_r/(l_r+l_f);
-%h_r = q_r + m*g/k_r*l_f/(l_r+l_f);
+% virtual spring length at no load is computed only beofre simulation 
+% h_f = q_f + m*g/k_f*l_r/(l_r+l_f);
+% h_r = q_r + m*g/k_r*l_f/(l_r+l_f);
 % spring to frame attachment point coordinates wrt body frame
 P =[l_f      l_f      l_r      l_r
     t_f/2    -t_f/2   t_r/2    -t_r/2
@@ -253,7 +253,7 @@ qdotdot = [qdotdot.DDy;    qdotdot.DDp;    qdotdot.DDr;
 qdotdot = simplify(qdotdot);
 % calculate values for placeholders
 RHS = subs(diff(functionalDerivative(U, Dq),t),diff(q), Dq) ...
-    + simplify(functionalDerivative(T-U, q))                          ...
+    + simplify(functionalDerivative(T-U, q))                ...
     - functionalDerivative(D, Dq)                           ...
     + Q;
 
@@ -284,7 +284,7 @@ syms delta_f delta_r Ddelta_f Ddelta_r
 % replace with the new time independent coordinates
 x= [y; p; r; x_CG; y_CG; z_CG; 
     delta_f; delta_r; gamma_fr; gamma_fl; gamma_rr; gamma_rl;  
-    Dy; Dp; Dr; Dx_CG; Dy_CG; Dz_CG
+    Dy; Dp; Dr; Dx_CG; Dy_CG; Dz_CG;
     Ddelta_f; Ddelta_r; Dgamma_fr; Dgamma_fl; Dgamma_rr; Dgamma_rl ];
 
 xdot_ = subs(xdot(t), [q(t); Dq(t)], x);

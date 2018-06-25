@@ -1,0 +1,26 @@
+# initial state file, variable names must match those used in carmodel.m
+# all units are metric
+y         0		# initial yaw
+p         0		# initial pitch
+r         0		# initial roll
+x_CG      0		# initial CG coordinates
+y_CG      0		# initial CG coordinates
+z_CG      0		# initial CG coordinates
+delta_f   0		# initial front steer angle
+delta_r   0		# initial rear steer angle
+gamma_fr  0		# initial wheel angular position (FR)
+gamma_fl  0		# initial wheel angular position (FL)
+gamma_rr  0		# initial wheel angular position (RR)
+gamma_rl  0		# initial wheel angular position (RL)
+Dy        0		# initial yaw rate
+Dp        0		# initial pitch rate
+Dr        0		# initial roll rate
+Dx_CG     0		# initial CG velocity wrt inertial frame
+Dy_CG     0		# initial CG velocity wrt inertial frame
+Dz_CG     0		# initial CG velocity wrt inertial frame
+Ddelta_f  0		# initial front steering rate
+Ddelta_r  0		# initial rear steering rate
+Dgamma_fr 0		# initial wheel speed (FR)
+Dgamma_fl 0		# initial wheel speed (FL)
+Dgamma_rr 0		# initial wheel speed (RR)
+Dgamma_rl 0		# initial wheel speed (RL)

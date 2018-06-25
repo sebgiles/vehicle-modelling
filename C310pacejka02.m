@@ -1,4 +1,4 @@
-function [F_x, F_y] = C310pacejka02(kappa, alpha, gamma, F_z, tyre)
+function [F_x, F_y, M_z] = C310pacejka02(kappa, alpha, gamma, F_z, tyre)
 T = tyre;
 
 F_z0 = T.FNOMIN;
@@ -90,5 +90,8 @@ S_Vykappa = D_Vykappa.*sin(T.RVY5.*atan(T.RVY6.*kappa)).*T.LVYKA;
 kappa_s = kappa + S_Hykappa;
 
 F_y = D_ykappa.*cos(C_ykappa.*atan(B_ykappa.*kappa_s - E_ykappa.*(B_ykappa.*kappa_s-atan(B_ykappa.*kappa_s))))+S_Vykappa;
+
+%% TODO: implement self aligning torque equations
+M_z = zeros(size(kappa));
 
 end
