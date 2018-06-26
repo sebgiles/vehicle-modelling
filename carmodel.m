@@ -84,13 +84,13 @@ Rz=[cos(y) -sin(y) 0
     sin(y) cos(y)  0
     0      0       1];
 if linearized
-    % linearized roll rotation matrix
+    % linearized pitch rotation matrix
     Ry=[1 0 p
         0 1 0
-        p 0 1];
+       -p 0 1];
     % linearized roll rotation matrix
     Rx=[1 0 0
-        0 1 r
+        0 1 -r
         0 r 1];
 else
     % pitch rotation matrix

@@ -14,7 +14,7 @@ k_f		35000	# front virtual spring stiffness
 k_r		35000	# rear virtual spring stiffness
 b_f		2000	# front virtual suspension damping 
 b_r		2000	# rear virtual suspension damping
-m		270		# sprung mass (including driver)
+m		350		# sprung mass (including driver)
 m_u		20		# unsprung mass
 Ixx		30		# Moment of inertia about longitudinal axis (sprung only)
 Iyy		60		# Moment of inertia about lateral axis (sprung only)
@@ -23,4 +23,3 @@ Ixz		0		# vertical-longitudinal inertia coupling
 I_u		50		# unsprung mass rotational inertia about vertical axis
 r_0		0.26	# wheel radius
 I_w		0.3		# wheel rotational inertia
-
