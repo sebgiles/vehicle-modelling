@@ -2,10 +2,10 @@
 # all units are metric
 g       9.81	# gravity
 t_f		1.2		# front track
-t_r		1.16	# rear track
-l_f		0.8112	# Front axle to CG distance
-l_r		0.748	# Rear axle to CG distance
-q_f		0.045	# front roll center height
+t_r		1.2	# rear track
+l_f		0.8	# Front axle to CG distance
+l_r		0.8	# Rear axle to CG distance
+q_f		0.09	# front roll center height
 q_r     0.09	# rear roll center height
 h_CG    0.3		# CG height
 I_f		1		# Front Steering inertia
@@ -14,7 +14,7 @@ k_f		35000	# front virtual spring stiffness
 k_r		35000	# rear virtual spring stiffness
 b_f		2000	# front virtual suspension damping 
 b_r		2000	# rear virtual suspension damping
-m		350		# sprung mass (including driver)
+m		300		# sprung mass (including driver)
 m_u		20		# unsprung mass
 Ixx		30		# Moment of inertia about longitudinal axis (sprung only)
 Iyy		60		# Moment of inertia about lateral axis (sprung only)

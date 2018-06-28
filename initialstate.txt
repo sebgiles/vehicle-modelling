@@ -18,10 +18,10 @@ Dy_CG     0		# initial CG velocity wrt inertial frame
 Dz_CG     0		# initial CG velocity wrt inertial frame
 Ddelta_f  0		# initial front steering rate
 Ddelta_r  0		# initial rear steering rate
-Dgamma_fr 3		# initial wheel speed (FR)
-Dgamma_fl 3		# initial wheel speed (FL)
-Dgamma_rr 3		# initial wheel speed (RR)
-Dgamma_rl 3		# initial wheel speed (RL)
+Dgamma_fr 0		# initial wheel speed (FR)
+Dgamma_fl 0		# initial wheel speed (FL)
+Dgamma_rr 0		# initial wheel speed (RR)
+Dgamma_rl 0		# initial wheel speed (RL)
 
 # initial state file, variable names must match those used in carmodel.m
 # all units are metric SI
