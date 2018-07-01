@@ -1,4 +1,4 @@
-function [BodyDynamicsFunction, WheelLoadsFunction, ContactPointVelocitiesFunction] = carmodel(linearized)
+function [] = carmodel(linearized)
  if nargin < 1
      linearized = false;
  end
