@@ -144,9 +144,7 @@ end
 %% SUSPENSION
 disp 'defining suspension'
 
-% virtual spring length at no load is computed only beofre simulation 
-% h_f = q_f + 0.5*m*g/k_f*l_r/(l_r+l_f);
-% h_r = q_r + 0.5*m*g/k_r*l_f/(l_r+l_f);
+
 % spring to frame attachment point coordinates wrt body frame
 P =[l_f      l_f      l_r      l_r
     t_f/2    -t_f/2   t_r/2    -t_r/2
