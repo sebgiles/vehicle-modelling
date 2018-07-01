@@ -37,7 +37,8 @@ syms I_w
 
 syms h_f h_r
 % have to update / change this
-params = [g; t_f; t_r; l_f; l_r; q_f; q_r; h_CG; I_f; I_r; k_f; k_r; b_f; b_r; m; m_u; Ixx; Iyy; Izz; Ixz; I_u; r_0; I_w; h_f; h_r];
+params = [g; t_f; t_r; l_f; l_r; q_f; q_r; h_CG; I_f; I_r; k_f; k_r; 
+    b_f; b_r; m; m_u; Ixx; Iyy; Izz; Ixz; I_u; r_0; I_w; h_f; h_r];
 %% Inputs Definition
 disp 'defining car input signals'
 % Front / Rear steer torques
@@ -208,11 +209,8 @@ T = T_rot + T_trans + T_w + T_steer;
 %% WHEELS
 disp 'defining road interface'
 
-% wheel centers wrt inertial frame
-w = ps.*[1;1;0]-[0;0;r_0];
-
 % wheel contact point velocities wrt inertial frame
-v = subs(diff(w, t), diff(q,t), Dq);
+v = subs(diff(ps, t), diff(q,t), Dq);
 v = v(t);
 % total planar force wrt inertial frame
 f= [Rz*Sfr*[FX_fr; FY_fr; 0] ...
@@ -220,7 +218,7 @@ f= [Rz*Sfr*[FX_fr; FY_fr; 0] ...
     Rz*Srr*[FX_rr; FY_rr; 0] ...
     Rz*Srl*[FX_rl; FY_rl; 0] ];
 f=simplify(f(t));
-w=w(t);
+ps=ps(t);
 %% TORQUES ON BODY
 disp 'defining torques'
 
@@ -231,7 +229,7 @@ M_motor = Rz*Sfr*[0; MW_fr; 0] + ...
           Rz*Srl*[0; MW_rl; 0] ;
 M_motor = simplify(M_motor);
 chi = [y(t);p(t);r(t)];
-M_body = E \ ([0 -r_0 0; r_0 0 0; 0 0 0]*f*[1;1;1;1] + M_motor);
+M_body = E \ M_motor;
 %% TORQUES ON WHEELS
 M_w = [MW_fr; MW_fl; MW_rr; MW_rl] - r_0 * [FX_fr; FX_fl; FX_rr; FX_rl];
 P_w = [gamma_fr(t); gamma_fl(t); gamma_rr(t); gamma_rl(t)];
@@ -243,7 +241,7 @@ disp 'calculating lagrange magic'
 % all external forces/torques
 F_ext = [f(:); M_body(t); M_w;        M_f;        M_r];
 % correpsonding application points/angles
-P_ext = [w(:);       chi; P_w; delta_f(t); delta_r(t)];
+P_ext = [ps(:);      chi; P_w; delta_f(t); delta_r(t)];
 % generalized forces
 Q = genforces(F_ext, P_ext, q(t));
 
