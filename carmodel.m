@@ -143,10 +143,8 @@ else
 end
 %% SUSPENSION
 disp 'defining suspension'
-
-
 % spring to frame attachment point coordinates wrt body frame
-P =[l_f      l_f      l_r      l_r
+P =[l_f      l_f     -l_r      -l_r
     t_f/2    -t_f/2   t_r/2    -t_r/2
     h_CG-q_f h_CG-q_f h_CG-q_r h_CG-q_r];
 % Suspension attachment point coordinates wrt inertial frame
