@@ -1,4 +1,3 @@
-
 % load car parametrization from file
 try
     [varname, varval] = textread(paramsfile,'%s %f', 'commentstyle','shell');
@@ -12,8 +11,8 @@ for i=1:length(varval)
 end
 
 try
-    h_f = q_f + m*g/k_f*l_r/(l_r+l_f);
-    h_r = q_r + m*g/k_r*l_f/(l_r+l_f);
+    h_f = q_f + 0.5*m*g/k_f*l_r/(l_r+l_f);
+    h_r = q_r + 0.5*m*g/k_r*l_f/(l_r+l_f);
     parameters = [g; t_f; t_r; l_f; l_r; q_f; q_r; h_CG; I_f; I_r; k_f; k_r; b_f; b_r; m; m_u; Ixx; Iyy; Izz; Ixz; I_u; r_0; I_w; h_f; h_r];
 catch
     warning(['Vehicle Parameters are  missing in "', paramsfile, '"']);
@@ -23,7 +22,6 @@ end
 for i=1:length(varval)
     eval(['clear ' varname{i}]);
 end
-clear h_f h_r
 
 % load initial state from file
 try
@@ -50,4 +48,3 @@ end
 for i=1:length(varval)
     eval(['clear ' varname{i}]);
 end
-clear i varname varval
