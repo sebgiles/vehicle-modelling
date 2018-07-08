@@ -92,6 +92,6 @@ kappa_s = kappa + S_Hykappa;
 F_y = D_ykappa.*cos(C_ykappa.*atan(B_ykappa.*kappa_s - E_ykappa.*(B_ykappa.*kappa_s-atan(B_ykappa.*kappa_s))))+S_Vykappa;
 
 %% TODO: implement self aligning torque equations
-M_z = zeros(size(kappa));
+M_z = -F_y*0.05;
 
 end
