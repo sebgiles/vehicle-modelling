@@ -204,9 +204,13 @@ T_steer = 1/2 * I_f * (Ddelta_f.^2) + 1/2 * I_r * (Ddelta_r.^2);
 T = T_rot + T_trans + T_w + T_steer;
 %% WHEELS
 disp 'defining road interface'
-
+% contact point coordinates with respect to undercarriage reference frame
+CP =[l_f      l_f     -l_r      -l_r
+    t_f/2    -t_f/2   t_r/2    -t_r/2
+    0         0         0           0 ];
+cp = Rz*CP + [x_CG; y_CG; 0];
 % wheel contact point velocities wrt inertial frame
-v = subs(diff(ps, t), diff(q,t), Dq);
+v = subs(diff(cp, t), diff(q,t), Dq);
 v = v(t);
 % total planar force wrt inertial frame
 f= [Rz*Sfr*[FX_fr; FY_fr; 0] ...
@@ -225,7 +229,7 @@ M_motor = Rz*Sfr*[0; MW_fr; 0] + ...
           Rz*Srl*[0; MW_rl; 0] ;
 M_motor = simplify(M_motor);
 chi = [y(t);p(t);r(t)];
-M_body = E \ M_motor;
+M_body = E \ (M_motor);
 %% TORQUES ON WHEELS
 M_w = [MW_fr; MW_fl; MW_rr; MW_rl] - r_0 * [FX_fr; FX_fl; FX_rr; FX_rl];
 P_w = [gamma_fr(t); gamma_fl(t); gamma_rr(t); gamma_rl(t)];
