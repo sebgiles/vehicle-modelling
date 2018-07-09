@@ -235,9 +235,9 @@ M_r = M_sr + MZ_rr + MZ_rl;
 %% LAGRANGE
 disp 'calculating lagrange magic'
 % all external forces/torques
-F_ext = [f(:); M_body(t); M_w;        M_f;        M_r];
+F_ext = [f(:); M_body(t); M_w;        M_f;        M_r;  M_sf+M_sr];
 % correpsonding application points/angles
-P_ext = [ps(:);      chi; P_w; delta_f(t); delta_r(t)];
+P_ext = [ps(:);      chi; P_w; delta_f(t); delta_r(t);       y(t)];
 % generalized forces
 Q = genforces(F_ext, P_ext, q(t));
 
