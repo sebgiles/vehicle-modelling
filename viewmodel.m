@@ -15,7 +15,7 @@ for j = 1:length(FZ)
     subplot(length(FZ),2,2*j-1);
     plot([])
     hold on
-    title(['FZ = ', num2str(FZ(j)), ' N - Long']);
+    title(['Logitudinal Force (FZ = ', num2str(FZ(j)), ' N)']);
     for k = 1:length(SA_x)
         F_x = C310pacejka02(SL_x, SA_x(k), 0, FZ(j), T);
         plot(SL_x, F_x);
@@ -26,7 +26,7 @@ for j = 1:length(FZ)
     subplot(length(FZ),2,2*j);
     plot([])
     hold on
-    title(['FZ = ', num2str(FZ(j)), ' N - Lat']);
+    title(['Lateral Force (FZ = ', num2str(FZ(j)), ' N)']);
     for h = 1:length(SL_y)
         [~, F_y] = C310pacejka02(SL_y(h), SA_y, 0, FZ(j), T);
         plot(rad2deg(SA_y), -F_y);
