@@ -13,7 +13,7 @@ gamma_rl  0		# initial wheel angular position (RL)
 Dy        0		# initial yaw rate
 Dp        0		# initial pitch rate
 Dr        0		# initial roll rate
-Dx_CG     1     # initial CG velocity wrt inertial frame
+Dx_CG     1    # initial CG velocity wrt inertial frame
 Dy_CG     0		# initial CG velocity wrt inertial frame
 Dz_CG     0		# initial CG velocity wrt inertial frame
 Ddelta_f  0		# initial front steering rate

@@ -1,6 +1,6 @@
 # car parameters file,  variable names must match those used in carmodel.m
 # all units are metric
-g       10       # gravity
+g       9.81       # gravity
 t_f		1.2		# front track
 t_r		1.2     # rear track
 l_f		0.8     # Front axle to CG distance

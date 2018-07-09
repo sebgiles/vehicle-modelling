@@ -135,10 +135,10 @@ else
         0             0             1 ];
     
     Srr=[cos(delta_r) -sin(delta_r) 0
-        sin(delta_f)  cos(delta_r)  0
+        sin(delta_r)  cos(delta_r)  0
         0             0             1 ];
     Srl=[cos(delta_r) -sin(delta_r) 0
-        sin(delta_f)  cos(delta_r)  0
+        sin(delta_r)  cos(delta_r)  0
         0             0             1 ];
 end
 %% SUSPENSION
@@ -208,10 +208,13 @@ disp 'defining road interface'
 CP =[l_f      l_f     -l_r      -l_r
     t_f/2    -t_f/2   t_r/2    -t_r/2
     0         0         0           0 ];
+% contact point coordinates with respect to inertial frame
 cp = Rz*CP + [x_CG; y_CG; 0];
 % wheel contact point velocities wrt inertial frame
 v = subs(diff(cp, t), diff(q,t), Dq);
 v = v(t);
+% contact point velocities wrt corresponding wheel frames
+v_w = [ Sfr\(Rz\v(:,1)) Sfl\(Rz\v(:,2)) Srr\(Rz\v(:,3)) Srl\(Rz\v(:,4)) ];
 % total planar force wrt inertial frame
 f= [Rz*Sfr*[FX_fr; FY_fr; 0] ...
     Rz*Sfl*[FX_fl; FY_fl; 0] ...
@@ -282,8 +285,7 @@ u= [FX_fr FY_fr MZ_fr ...
 xdot = [Dq; qdotdot];
 % wheel loads for friction calculations (obtained as suspension forces)
 FZ = - k_f * d - b_f * Dd;
-% contact point velocities wrt corresponding wheel frames
-v_w = [ Sfr\(Rz\v(:,1)) Sfl\(Rz\v(:,2)) Srr\(Rz\v(:,3)) Srl\(Rz\v(:,4)) ];
+
 %% Function handles contruction and saving
 % redefine lagrangian variables and derivatives so we don't need to worry
 % about the time variable
