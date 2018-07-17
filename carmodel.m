@@ -294,24 +294,24 @@ syms gamma_fr gamma_fl gamma_rr gamma_rl
 syms Dgamma_fr Dgamma_fl Dgamma_rr Dgamma_rl 
 syms delta_f delta_r Ddelta_f Ddelta_r 
 
-% replace with the new time independent coordinates
+%state vector
 x= [y; p; r; x_CG; y_CG; z_CG;
     delta_f; delta_r; gamma_fr; gamma_fl; gamma_rr; gamma_rl;
     Dy; Dp; Dr; Dx_CG; Dy_CG; Dz_CG;
     Ddelta_f; Ddelta_r; Dgamma_fr; Dgamma_fl; Dgamma_rr; Dgamma_rl ];
-
+% replace with the new time independent coordinates
 xdot_ = subs(xdot(t), [q(t); Dq(t)], x);
 FZ_   = subs(  FZ(t), [q(t); Dq(t)], x);
 CPV_  = subs( v_w(t), [q(t); Dq(t)], x);
 
 disp 'writing body dynamics function to file'
 delete BodyDynamicsFunction.m
-BodyDynamicsFunction = matlabFunction(xdot_, 'Vars', {x, u, params},'File','BodyDynamicsFunction');
+matlabFunction(xdot_, 'Vars', {x, u, params},'File','BodyDynamicsFunction');
 
 disp 'writing wheel loads function to file'
 delete WheelLoadsFunction.m
-WheelLoadsFunction  = matlabFunction(FZ_, 'Vars', {x, params},'File','WheelLoadsFunction');
+matlabFunction(FZ_, 'Vars', {x, params},'File','WheelLoadsFunction');
 
 disp 'writing contact point velocities function to file'
 delete ContactPointVelocitiesFunction.m
-ContactPointVelocitiesFunction = matlabFunction(CPV_, 'Vars', {x, params},'File','ContactPointVelocitiesFunction');
+matlabFunction(CPV_, 'Vars', {x, params},'File','ContactPointVelocitiesFunction');
